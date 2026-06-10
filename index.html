@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI眼镜每周热点选题清单</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif; background: #f5f6fa; color: #333; min-height: 100vh; }
+.container { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+header { text-align: center; margin-bottom: 32px; }
+header h1 { font-size: 28px; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; }
+header p { color: #666; font-size: 14px; }
+.week-selector { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 32px; }
+.week-selector label { font-size: 14px; color: #555; font-weight: 500; }
+.week-selector select { padding: 8px 16px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px; background: #fff; cursor: pointer; outline: none; transition: border-color .2s; }
+.week-selector select:focus { border-color: #7c3aed; }
+.loading { text-align: center; padding: 60px 0; color: #999; font-size: 16px; }
+.top3-section { background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%); border-radius: 16px; padding: 28px 24px; margin-bottom: 32px; color: #fff; }
+.top3-section h2 { font-size: 20px; margin-bottom: 16px; font-weight: 600; }
+.top3-list { display: flex; flex-direction: column; gap: 14px; }
+.top3-item { background: rgba(255,255,255,0.15); border-radius: 12px; padding: 16px 18px; backdrop-filter: blur(4px); }
+.top3-item .rank { display: inline-block; background: rgba(255,255,255,0.3); border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+.top3-item .title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.top3-item .meta { font-size: 13px; opacity: 0.85; }
+.top3-item .stars { margin-top: 4px; font-size: 14px; }
+.top3-item .warning { margin-top: 6px; font-size: 12px; background: rgba(255,200,50,0.25); border-radius: 6px; padding: 4px 8px; display: inline-block; }
+.tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+.tab-btn { padding: 10px 20px; border-radius: 24px; border: none; font-size: 14px; font-weight: 500; cursor: pointer; transition: all .2s; background: #e8e8f0; color: #555; }
+.tab-btn.active { background: #7c3aed; color: #fff; box-shadow: 0 4px 12px rgba(124,58,237,0.3); }
+.tab-btn:hover:not(.active) { background: #d8d8e8; }
+.platform-panel { display: none; }
+.platform-panel.active { display: block; }
+.category-title { font-size: 18px; font-weight: 600; color: #1a1a2e; margin: 24px 0 14px; padding-left: 12px; border-left: 4px solid #7c3aed; }
+.topics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin-bottom: 16px; }
+.topic-card { background: #fff; border-radius: 14px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all .25s; position: relative; overflow: hidden; }
+.topic-card:hover { box-shadow: 0 8px 24px rgba(124,58,237,0.12); transform: translateY(-2px); }
+.topic-card .hotspot-tag { display: inline-block; background: #f0e6ff; color: #7c3aed; font-size: 12px; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; font-weight: 500; }
+.topic-card .heat { font-size: 11px; color: #999; margin-left: 6px; }
+.topic-card .idea { font-size: 15px; font-weight: 600; color: #1a1a2e; margin-bottom: 8px; line-height: 1.4; }
+.topic-card .desc { font-size: 13px; color: #666; line-height: 1.6; margin-bottom: 10px; }
+.topic-card .formula { font-size: 12px; color: #7c3aed; background: #f8f5ff; padding: 6px 10px; border-radius: 8px; line-height: 1.5; }
+.topic-card .card-link { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; }
+.topic-card .link-hint { position: absolute; top: 12px; right: 12px; font-size: 12px; color: #bbb; transition: color .2s; }
+.topic-card:hover .link-hint { color: #7c3aed; }
+.risk-section { background: #fff; border-radius: 14px; padding: 24px; margin-top: 32px; border: 1px solid #ffe0e0; }
+.risk-section h3 { font-size: 16px; color: #e53e3e; margin-bottom: 14px; font-weight: 600; }
+.risk-item { margin-bottom: 12px; font-size: 13px; line-height: 1.6; }
+.risk-item strong { color: #e53e3e; }
+.source-note { text-align: center; margin-top: 24px; font-size: 12px; color: #aaa; }
+.hotlist-section { background: #fff; border-radius: 14px; padding: 24px; margin-top: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.hotlist-section h3 { font-size: 18px; font-weight: 600; color: #1a1a2e; margin-bottom: 18px; }
+.hotlist-platform { margin-bottom: 24px; }
+.hotlist-platform:last-child { margin-bottom: 0; }
+.hotlist-platform h4 { font-size: 15px; font-weight: 600; color: #7c3aed; margin-bottom: 10px; padding-left: 10px; border-left: 3px solid #7c3aed; }
+.hotlist-items { display: flex; flex-wrap: wrap; gap: 8px; }
+.hotlist-item { display: inline-flex; align-items: center; gap: 6px; background: #f8f5ff; border: 1px solid #ede5ff; border-radius: 20px; padding: 6px 14px; font-size: 13px; color: #444; text-decoration: none; transition: all .2s; cursor: pointer; }
+.hotlist-item:hover { background: #7c3aed; color: #fff; border-color: #7c3aed; transform: translateY(-1px); box-shadow: 0 3px 8px rgba(124,58,237,0.2); }
+.hotlist-item .hot-heat { font-size: 11px; color: #999; font-weight: 500; }
+.hotlist-item:hover .hot-heat { color: rgba(255,255,255,0.8); }
+@media (max-width: 600px) {
+  .container { padding: 16px 12px; }
+  header h1 { font-size: 22px; }
+  .topics-grid { grid-template-columns: 1fr; }
+  .top3-section { padding: 20px 16px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>AI眼镜每周热点选题清单</h1>
+    <p>基于真实热榜数据，每周更新 · 数据驱动选题 · 支持查看历史周期</p>
+  </header>
+
+  <div class="week-selector">
+    <label for="weekSelect">选择周期：</label>
+    <select id="weekSelect"><option value="">加载中...</option></select>
+  </div>
+
+  <div id="content">
+    <div class="loading">正在加载数据...</div>
+  </div>
+</div>
+
+<script>
+const EMBEDDED_DATA = {
+    "2026-06-02": {
+  "date": "2026-06-02",
+    "source": "钉钉文档选题清单（2026-06-02）",
+    "top3": [
+      {
+        "title": "高考送考实测：戴AI眼镜在考场外能帮孩子做什么",
+        "hotspot": "高考（6/7-9）三平台同时爆，时间窗仅一周",
+        "difficulty": "低（场景真实+情感共鸣）",
+        "stars": 5
+      },
+      {
+        "title": "618锁单决策：AI眼镜怎么买最省/避坑横评",
+        "hotspot": "618大促整个6月，决策类内容流量顶峰",
+        "difficulty": "低（横评模板成熟）",
+        "stars": 5
+      },
+      {
+        "title": "毕业旅行戴AI眼镜：走到哪AI讲到哪",
+        "hotspot": "毕业季+夏日记录，第一视角拍摄绝配",
+        "difficulty": "中（需外出拍摄）",
+        "stars": 5
+      }
+    ],
+    "platforms": {
+      "douyin": {
+        "name": "抖音",
+        "count": 30,
+        "categories": [
+          {
+            "title": "社会热点角度",
+            "topics": [
+              {
+                "hotspot": "群星为高考生送祝福/守护少年的你",
+                "heat": "770万+热度",
+                "source": "抖音热榜",
+                "idea": "《送考爸妈实测：戴AI眼镜在考场外，能帮孩子做什么？》——查考点路线、记准考证、实时翻天气",
+                "desc": "蹭高考送考热点，展示AI眼镜在重大时刻的实用功能，情感共鸣强",
+                "formula": "\"XX重大时刻，AI眼镜帮我XX\"",
+                "keyword": "高考送考"
+              },
+              {
+                "hotspot": "租房发现摄像头",
+                "heat": "小红书热议迁移",
+                "source": "跨平台热点",
+                "idea": "《用AI眼镜10秒扫出房间里的隐藏摄像头？实测》——蹭防偷拍恐慌，正面讲AI识别",
+                "desc": "蹭隐私安全热点，展示AI眼镜的摄像头识别功能，实用性强",
+                "formula": "\"用XX破解/识别隐藏的XX\"",
+                "keyword": "隐私安全"
+              },
+              {
+                "hotspot": "网警查处网暴抗洪村支书",
+                "heat": "1170万热度",
+                "source": "抖音热榜",
+                "idea": "《AI眼镜第一视角记录基层一天：让看不见的人被看见》——公益向人物纪实",
+                "desc": "蹭社会正能量热点，用第一视角记录基层工作者，公益向内容",
+                "formula": "\"第一视角记录XX群体的一天\"",
+                "keyword": "公益记录"
+              },
+              {
+                "hotspot": "中央财政下达育儿补贴999亿",
+                "heat": "896万热度",
+                "source": "抖音热榜",
+                "idea": "《新手爸妈实测：AI眼镜带娃能不能解放双手？》——蹭育儿补贴话题",
+                "desc": "蹭育儿政策热点，展示AI眼镜在带娃场景的实用性",
+                "formula": "\"XX人群用AI眼镜能不能解决XX痛点\"",
+                "keyword": "育儿带娃"
+              },
+              {
+                "hotspot": "英伟达股价大涨",
+                "heat": "911万热度",
+                "source": "抖音热榜",
+                "idea": "《AI都这么火了，为什么你还没戴上AI眼镜？》——蹭AI大势讲普及",
+                "desc": "蹭AI行业热点，用反问句制造紧迫感，推动产品认知",
+                "formula": "\"XX都火成这样了，你还没用上XX？\"",
+                "keyword": "AI大势"
+              },
+              {
+                "hotspot": "当小米车主遇到问界车主",
+                "heat": "767万热度",
+                "source": "抖音热榜",
+                "idea": "《当小米AI眼镜车主遇到华为AI眼镜车主》——套用对比梗做品牌对话短剧",
+                "desc": "蹭品牌对比梗，做AI眼镜品牌的对话短剧，趣味性强",
+                "formula": "\"当XX用户遇到XX用户\"",
+                "keyword": "品牌对比"
+              },
+              {
+                "hotspot": "哈尔滨同时出现多种极端天气",
+                "heat": "918万热度",
+                "source": "抖音热榜",
+                "idea": "《AI眼镜实时报天气有多准？极端天气出门实测》——抬头就知道要不要带伞",
+                "desc": "蹭极端天气热点，实测AI眼镜天气功能，实用场景",
+                "formula": "\"XX场景下AI眼镜的XX功能实测\"",
+                "keyword": "天气实测"
+              },
+              {
+                "hotspot": "三招识破汛期灾情谣言",
+                "heat": "852万热度",
+                "source": "抖音热榜",
+                "idea": "《戴AI眼镜逛街，AI能不能当场帮我识破谣言/虚假宣传？》——AI事实核查",
+                "desc": "蹭辟谣热点，展示AI眼镜的信息核查能力，正能量",
+                "formula": "\"AI眼镜帮我当场分辨XX真假\"",
+                "keyword": "辟谣核查"
+              },
+              {
+                "hotspot": "华为nova16系列首发开箱",
+                "heat": "767万热度",
+                "source": "抖音热榜",
+                "idea": "《新机配新镜：华为nova16 + 华为AI眼镜联动实测》——蹭自家新品开箱热度",
+                "desc": "蹭新品开箱热点，做生态联动实测，科技粉丝向",
+                "formula": "\"新品XX + AI眼镜 联动体验\"",
+                "keyword": "新品联动"
+              },
+              {
+                "hotspot": "库里宣布与李宁签约",
+                "heat": "240万在看",
+                "source": "抖音上升热点",
+                "idea": "《打球戴AI眼镜=物理外挂？致敬库里来段三分挑战》——明星体育热点+外挂梗",
+                "desc": "蹭体育明星热点，用外挂梗做趣味挑战，运动场景",
+                "formula": "\"戴AI眼镜挑战XX明星同款动作\"",
+                "keyword": "体育挑战"
+              }
+            ]
+          },
+          {
+            "title": "产品测评角度",
+            "topics": [
+              {
+                "hotspot": "618大促",
+                "heat": "全域热点",
+                "source": "小红书/抖音",
+                "idea": "《618 AI眼镜怎么买最省？薅券实测一条讲清》——蹭大促决策",
+                "desc": "蹭618大促热点，做购买决策指南，直接带转化",
+                "formula": "\"618/双11 XX怎么买最省\"",
+                "keyword": "618购买"
+              },
+              {
+                "hotspot": "普通人也能穿的夏日美女感穿搭",
+                "heat": "1177万热度",
+                "source": "抖音热榜",
+                "idea": "《AI眼镜算夏日穿搭单品吗？平价款戴出高级感实测》",
+                "desc": "蹭穿搭热点，把AI眼镜作为穿搭单品测评，颜值向",
+                "formula": "\"XX到底算不算穿搭单品\"",
+                "keyword": "穿搭单品"
+              },
+              {
+                "hotspot": "跟着董洁挑战一周穿搭不重样",
+                "heat": "抖音热榜",
+                "source": "抖音热榜",
+                "idea": "《一副AI眼镜配一周7套穿搭，百搭还是翻车？》——蹭穿搭挑战",
+                "desc": "蹭穿搭挑战热点，测试AI眼镜的百搭性，趣味测评",
+                "formula": "\"一件XX挑战一周不重样\"",
+                "keyword": "穿搭挑战"
+              },
+              {
+                "hotspot": "华强北/直播间神价数码",
+                "heat": "抖音常青打假",
+                "source": "抖音站内",
+                "idea": "《398直播间AI眼镜 vs 2699品牌款，差在哪？》——平替打假横评",
+                "desc": "蹭打假热点，做平替vs品牌横评，对比冲击力强",
+                "formula": "\"几百块平替 vs 大牌，差在哪\"",
+                "keyword": "平替打假"
+              },
+              {
+                "hotspot": "海边Hyrox夏日运动顶配",
+                "heat": "1055万热度",
+                "source": "抖音热榜",
+                "idea": "《运动AI眼镜实测：跑步骑行能不能替代运动手表？》",
+                "desc": "蹭运动热点，实测AI眼镜能否替代运动手表，功能对比",
+                "formula": "\"AI眼镜能不能替代XX设备\"",
+                "keyword": "运动替代"
+              },
+              {
+                "hotspot": "育儿补贴/带娃话题",
+                "heat": "896万热度",
+                "source": "抖音热榜",
+                "idea": "《给娃买AI眼镜值不值？三款儿童向功能横评》",
+                "desc": "蹭育儿热点，做儿童向功能横评，精准人群",
+                "formula": "\"给XX人群买AI眼镜怎么选\"",
+                "keyword": "儿童功能"
+              },
+              {
+                "hotspot": "晚霞就是天空的诗",
+                "heat": "抖音热榜",
+                "source": "抖音热榜",
+                "idea": "《拍晚霞谁更强？AI眼镜第一视角 vs 手机实测》——画质对比",
+                "desc": "蹭晚霞热点，做拍摄画质对比，直观展示产品力",
+                "formula": "\"拍XX，AI眼镜 vs 手机谁更好\"",
+                "keyword": "拍摄对比"
+              },
+              {
+                "hotspot": "英伟达/AI大势",
+                "heat": "911万热度",
+                "source": "抖音热榜",
+                "idea": "《2026最值得买的3款AI硬件，AI眼镜排第几？》",
+                "desc": "蹭AI大势热点，做AI硬件排行，植入产品",
+                "formula": "\"最值得买的N款XX，XX排第几\"",
+                "keyword": "AI硬件排行"
+              },
+              {
+                "hotspot": "当小米遇到问界（对比梗）",
+                "heat": "767万热度",
+                "source": "抖音热榜",
+                "idea": "《小米/华为/夸克AI眼镜三国杀，到底买谁？》",
+                "desc": "蹭对比梗热点，做三大品牌横评，决策向内容",
+                "formula": "\"三大品牌XX三国杀\"",
+                "keyword": "品牌三国杀"
+              },
+              {
+                "hotspot": "下一站六月/毕业季",
+                "heat": "抖音热榜",
+                "source": "抖音热榜",
+                "idea": "《毕业礼物送AI眼镜靠谱吗？学生党实测》——蹭毕业送礼",
+                "desc": "蹭毕业季热点，做礼物推荐测评，学生党人群",
+                "formula": "\"送XX人群XX当礼物靠不靠谱\"",
+                "keyword": "毕业礼物"
+              }
+            ]
+          },
+          {
+            "title": "生活方式角度",
+            "topics": [
+              {
+                "hotspot": "此刻地理不在书里而在我脚下",
+                "heat": "769万热度",
+                "source": "抖音热榜",
+                "idea": "《毕业旅行戴AI眼镜：走到哪AI讲到哪，地理课本活了》",
+                "desc": "蹭旅行热点，展示AI眼镜的实时讲解功能，知识+旅行",
+                "formula": "\"戴AI眼镜去XX，知识/讲解实时浮现\"",
+                "keyword": "旅行讲解"
+              },
+              {
+                "hotspot": "晚霞就是天空的诗",
+                "heat": "抖音热榜",
+                "source": "抖音热榜",
+                "idea": "《解放双手拍晚霞：第一视角记录今天的天空》",
+                "desc": "蹭晚霞热点，展示第一视角拍摄优势，情感向",
+                "formula": "\"第一视角记录XX的高光瞬间\"",
+                "keyword": "晚霞记录"
+              },
+              {
+                "hotspot": "海边Hyrox夏日顶配",
+                "heat": "1055万热度",
+                "source": "抖音热榜",
+                "idea": "《戴AI眼镜冲海边运动局：边练边播配速》",
+                "desc": "蹭运动热点，展示运动数据实时显示功能",
+                "formula": "\"戴AI眼镜做XX运动，数据实时上眼\"",
+                "keyword": "运动数据"
+              },
+              {
+                "hotspot": "普通人夏日美女感穿搭",
+                "heat": "1177万热度",
+                "source": "抖音热榜",
+                "idea": "《AI眼镜+夏日穿搭：科技girl的通勤一套》",
+                "desc": "蹭穿搭热点，展示AI眼镜融入日常穿搭",
+                "formula": "\"AI眼镜融进XX风格穿搭\"",
+                "keyword": "通勤穿搭"
+              },
+              {
+                "hotspot": "王祖蓝全网最想过六一/大朋友问小朋友答",
+                "heat": "抖音热榜",
+                "source": "抖音热榜",
+                "idea": "《带AI眼镜陪娃过六一：认万物/讲绘本/拍童年》",
+                "desc": "蹭六一热点，展示亲子场景功能，情感共鸣",
+                "formula": "\"戴AI眼镜陪XX过节日\"",
+                "keyword": "六一亲子"
+              },
+              {
+                "hotspot": "我的童年有动漫的颜色",
+                "heat": "抖音热榜",
+                "source": "抖音热榜",
+                "idea": "《戴AI眼镜重走童年场景，AI帮我认出小时候的XX》——回忆杀",
+                "desc": "蹭回忆杀热点，用AI眼镜唤醒童年记忆，情感向",
+                "formula": "\"戴AI眼镜重回XX，唤醒回忆\"",
+                "keyword": "童年回忆"
+              },
+              {
+                "hotspot": "00后婚前影像MV爆火",
+                "heat": "抖音热榜",
+                "source": "抖音热榜",
+                "idea": "《婚礼跟拍新姿势：伴娘戴AI眼镜第一视角记录全程》",
+                "desc": "蹭婚礼热点，展示第一视角记录功能，仪式感",
+                "formula": "\"XX仪式用AI眼镜第一视角记录\"",
+                "keyword": "婚礼记录"
+              },
+              {
+                "hotspot": "所有馋嘴猫抬起左手/手势舞梗",
+                "heat": "抖音热榜",
+                "source": "抖音热榜",
+                "idea": "《戴AI眼镜跟拍最炫手势舞，AI实时识别动作》",
+                "desc": "蹭手势舞热点，展示AI动作识别功能，趣味互动",
+                "formula": "\"戴AI眼镜跟拍XX热门舞/梗\"",
+                "keyword": "手势舞"
+              },
+              {
+                "hotspot": "下一站六月/散伙饭",
+                "heat": "抖音热榜",
+                "source": "抖音热榜",
+                "idea": "《毕业季最后一顿散伙饭，AI眼镜第一视角留住每个人》",
+                "desc": "蹭毕业季热点，用第一视角记录珍贵时刻，情感向",
+                "formula": "\"用AI眼镜留住XX的最后一次\"",
+                "keyword": "散伙饭"
+              },
+              {
+                "hotspot": "备孕/新生儿护理",
+                "heat": "抖音育儿高频",
+                "source": "抖音站内",
+                "idea": "《新手妈妈解放双手：喂奶哄睡时戴AI眼镜查攻略》",
+                "desc": "蹭育儿热点，展示解放双手功能，精准人群",
+                "formula": "\"XX忙不过来时，AI眼镜帮我XX\"",
+                "keyword": "新手妈妈"
+              }
+            ]
+          }
+        ]
+      },
+      "bilibili": {
+        "name": "B站",
+        "count": 30,
+        "categories": [
+          {
+            "title": "社会热点角度",
+            "topics": [
+              {
+                "hotspot": "《高考和漫展时间冲突参加哪个》《2026高考数学考前安心课》",
+                "heat": "B站排行榜在榜",
+                "source": "B站排行榜",
+                "idea": "《假如带AI眼镜进高考考场会怎样？聊聊AI与考试公平的边界》——知识区深度（不教作弊，谈伦理）",
+                "desc": "蹭高考热点，做AI与考试伦理的深度讨论，知识区向",
+                "formula": "\"假如带AI眼镜进XX，会发生什么\"",
+                "keyword": "高考伦理"
+              },
+              {
+                "hotspot": "8岁到18岁陌生人街头接力问答",
+                "heat": "B站爆款治愈向",
+                "source": "B站排行榜",
+                "idea": "《戴AI眼镜街头接力问答：让AI帮陌生人回答人生难题》",
+                "desc": "蹭街头问答热点，用AI眼镜做街头实验，治愈向",
+                "formula": "\"戴AI眼镜做街头XX实验\"",
+                "keyword": "街头问答"
+              },
+              {
+                "hotspot": "印度的热度越来越高",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《戴AI眼镜翻译游印度/东南亚：语言不通也能聊嗨》",
+                "desc": "蹭印度热/出境游热点，展示翻译功能，实用性强",
+                "formula": "\"戴AI眼镜去XX国家，全程靠翻译\"",
+                "keyword": "印度旅行"
+              },
+              {
+                "hotspot": "英伟达大涨/AI大势",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《AI眼镜是不是下一个智能手机？10年后还要带手机吗》——行业深度判断",
+                "desc": "蹭AI大势热点，做行业深度分析，科技向",
+                "formula": "\"XX会不会取代XX，几年内成真\"",
+                "keyword": "行业判断"
+              },
+              {
+                "hotspot": "网络热传生物鉴定",
+                "heat": "B站常青科普梗",
+                "source": "B站站内",
+                "idea": "《戴AI眼镜做\"万物鉴定\"：路边动植物AI当场识别准不准》",
+                "desc": "蹭万物鉴定梗，实测AI识别能力，科普向",
+                "formula": "\"戴AI眼镜鉴定XX，AI靠不靠谱\"",
+                "keyword": "万物鉴定"
+              },
+              {
+                "hotspot": "残疾制造机舟山眼镜蛇",
+                "heat": "B站排行榜·野生动物科普",
+                "source": "B站排行榜",
+                "idea": "《戴AI眼镜认毒蛇/危险动物，关键时刻能救命吗？》——户外安全向",
+                "desc": "蹭野生动物科普热点，展示AI识别危险动物功能，安全向",
+                "formula": "\"戴AI眼镜识别XX危险，实测\"",
+                "keyword": "危险识别"
+              },
+              {
+                "hotspot": "自制千机伞/最强武器自制",
+                "heat": "B站DIY整活爆款",
+                "source": "B站排行榜",
+                "idea": "《我给AI眼镜DIY了个XX，实现了官方没有的功能》——硬核改造",
+                "desc": "蹭DIY热点，做AI眼镜硬核改造，极客向",
+                "formula": "\"我把XX改造出了官方没有的功能\"",
+                "keyword": "DIY改造"
+              },
+              {
+                "hotspot": "毕导《这是什么妖术》",
+                "heat": "B站知识区爆款",
+                "source": "B站站内",
+                "idea": "《AI眼镜识破\"科学妖术\"：它能看穿魔术/错觉吗？》——知识趣味实验",
+                "desc": "蹭科学实验热点，用AI眼镜看穿魔术错觉，趣味科普",
+                "formula": "\"AI眼镜能不能看穿XX错觉/魔术\"",
+                "keyword": "科学实验"
+              },
+              {
+                "hotspot": "育儿补贴999亿政策",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《AI眼镜会不会成为下一代孩子的\"标配\"？聊AI原住民》——社会观察",
+                "desc": "蹭育儿政策热点，做AI原住民社会观察，深度向",
+                "formula": "\"XX会不会成为下一代的标配\"",
+                "keyword": "AI原住民"
+              },
+              {
+                "hotspot": "2026年7月新番导视",
+                "heat": "B站二次元大盘",
+                "source": "B站站内",
+                "idea": "《戴AI眼镜看番/漫展实时识别角色，二次元嘴替》",
+                "desc": "蹭二次元热点，展示AI角色识别功能，精准人群",
+                "formula": "\"戴AI眼镜逛漫展，AI实时识别XX\"",
+                "keyword": "二次元"
+              }
+            ]
+          },
+          {
+            "title": "产品测评角度",
+            "topics": [
+              {
+                "hotspot": "618大促",
+                "heat": "B站排行榜",
+                "source": "B站站内",
+                "idea": "《618 AI眼镜超深度避坑：22款无屏vs有屏怎么选》——B站擅长的硬核横评",
+                "desc": "蹭618热点，做超深度横评，B站硬核风格",
+                "formula": "\"618 N款XX深度横评避坑\"",
+                "keyword": "618横评"
+              },
+              {
+                "hotspot": "高考考前安心课（学习向在榜）",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《学生党AI眼镜实测：提词/查单词/记笔记，是神器还是分心》",
+                "desc": "蹭学习热点，实测学生场景功能，争议向",
+                "formula": "\"学生党用XX，是神器还是翻车\"",
+                "keyword": "学生实测"
+              },
+              {
+                "hotspot": "华为nova16首发开箱",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《华为生态联动实测：nova16 + 华为AI眼镜能玩出什么》",
+                "desc": "蹭新品热点，做生态联动深度实测，科技向",
+                "formula": "\"XX全家桶联动深度实测\"",
+                "keyword": "生态联动"
+              },
+              {
+                "hotspot": "自制武器/硬核DIY热",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《把5款AI眼镜拆开看：贵的和便宜的差在哪？》——拆解向",
+                "desc": "蹭DIY热点，做拆解对比，硬核测评",
+                "formula": "\"拆开N款XX，看贵的便宜的差在哪\"",
+                "keyword": "拆解对比"
+              },
+              {
+                "hotspot": "印度热/出海话题",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《AI眼镜翻译能不能扛住印度英语/东南亚口音？极限实测》",
+                "desc": "蹭印度热/出海热点，做翻译极限测试，实用向",
+                "formula": "\"AI眼镜翻译能不能扛住XX极限场景\"",
+                "keyword": "翻译极限"
+              },
+              {
+                "hotspot": "鸣潮/游戏联动大盘",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《戴AI眼镜打游戏=开挂？竞技/手游实测延迟与体验》",
+                "desc": "蹭游戏热点，实测游戏场景体验，争议向",
+                "formula": "\"戴AI眼镜打XX游戏的真实体验\"",
+                "keyword": "游戏实测"
+              },
+              {
+                "hotspot": "AI大势/英伟达",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《2026 AI硬件横评：AI眼镜 vs AI耳机 vs AI挂坠谁更值》——智能穿戴大横评",
+                "desc": "蹭AI大势热点，做智能穿戴大横评，决策向",
+                "formula": "\"N类AI穿戴设备横评谁更值\"",
+                "keyword": "穿戴横评"
+              },
+              {
+                "hotspot": "海边Hyrox运动顶配",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《运动AI眼镜 vs 运动手表 vs 运动耳机，运动党买谁》",
+                "desc": "蹭运动热点，做三类设备对比，运动人群",
+                "formula": "\"运动场景三类设备怎么选\"",
+                "keyword": "运动设备"
+              },
+              {
+                "hotspot": "毕业季/送礼",
+                "heat": "B站排行榜",
+                "source": "B站站内",
+                "idea": "《毕业季数码礼物清单：AI眼镜该不该上榜？》",
+                "desc": "蹭毕业季热点，做礼物清单测评，学生党",
+                "formula": "\"XX节点数码礼物清单测评\"",
+                "keyword": "毕业礼物"
+              },
+              {
+                "hotspot": "网传生物鉴定梗",
+                "heat": "B站常青梗",
+                "source": "B站站内",
+                "idea": "《AI眼镜\"识万物\"能力极限测评：50种物品AI能认对几个》",
+                "desc": "蹭万物鉴定梗，做识别能力极限挑战，趣味测评",
+                "formula": "\"AI眼镜识别能力极限挑战N连\"",
+                "keyword": "识别极限"
+              }
+            ]
+          },
+          {
+            "title": "生活方式角度",
+            "topics": [
+              {
+                "hotspot": "用3分钟记录我们的夏天/儿童节特辑",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《用AI眼镜第一视角记录我的夏天：解放双手版Vlog》",
+                "desc": "蹭夏日记录热点，展示第一视角Vlog，情感向",
+                "formula": "\"用AI眼镜第一视角记录XX季节/主题\"",
+                "keyword": "夏日记录"
+              },
+              {
+                "hotspot": "高考/毕业季",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《戴AI眼镜重回母校：AI帮我认出十年前的每个角落》——回忆杀",
+                "desc": "蹭毕业季热点，用AI眼镜唤醒母校记忆，情感向",
+                "formula": "\"戴AI眼镜重回XX地，AI唤醒记忆\"",
+                "keyword": "母校回忆"
+              },
+              {
+                "hotspot": "8岁到18岁街头接力问答",
+                "heat": "B站爆款",
+                "source": "B站排行榜",
+                "idea": "《戴AI眼镜街采：让AI替路人回答\"长大后想干嘛\"》",
+                "desc": "蹭街头问答热点，用AI眼镜做主题街采，治愈向",
+                "formula": "\"戴AI眼镜做XX主题街采\"",
+                "keyword": "街头街采"
+              },
+              {
+                "hotspot": "不知道吃什么就看这个",
+                "heat": "B站排行榜·美食决策梗",
+                "source": "B站排行榜",
+                "idea": "《戴AI眼镜逛菜市场/超市，AI帮我决定今天吃什么》",
+                "desc": "蹭美食决策梗，展示AI决策功能，生活向",
+                "formula": "\"选择困难时让AI眼镜帮我决定XX\"",
+                "keyword": "美食决策"
+              },
+              {
+                "hotspot": "印度热/出境游",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《戴AI眼镜穷游东南亚：翻译+导航+砍价全靠它》",
+                "desc": "蹭出境游热点，展示多功能集成，实用向",
+                "formula": "\"戴AI眼镜穷游XX，全程靠它\"",
+                "keyword": "穷游东南亚"
+              },
+              {
+                "hotspot": "鸣潮生日会/二次元联动",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《戴AI眼镜逛漫展cos现场：AI实时报出角色出处》",
+                "desc": "蹭二次元热点，展示角色识别功能，精准人群",
+                "formula": "\"戴AI眼镜逛XX亚文化现场\"",
+                "keyword": "漫展"
+              },
+              {
+                "hotspot": "千机伞/手工DIY热",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《戴AI眼镜学做手工：AI实时手把手教，解放双手》",
+                "desc": "蹭DIY热点，展示AI教学功能，实用向",
+                "formula": "\"戴AI眼镜学XX技能，AI实时教学\"",
+                "keyword": "手工教学"
+              },
+              {
+                "hotspot": "人民的盒饭摊/市井烟火",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《戴AI眼镜摆摊一天：AI帮我记账/算钱/招呼客人》",
+                "desc": "蹭市井烟火热点，体验职业一天，趣味向",
+                "formula": "\"戴AI眼镜体验XX职业一天\"",
+                "keyword": "摆摊体验"
+              },
+              {
+                "hotspot": "晚霞/天空成诗",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《延时摄影新解法：AI眼镜挂脖拍一整天天空变化》",
+                "desc": "蹭晚霞热点，展示延时摄影功能，创意向",
+                "formula": "\"AI眼镜记录XX的时间流逝\"",
+                "keyword": "天空延时"
+              },
+              {
+                "hotspot": "夏日运动/Hyrox",
+                "heat": "B站排行榜",
+                "source": "B站排行榜",
+                "idea": "《戴AI眼镜爬山/骑行：第一视角+实时海拔配速》",
+                "desc": "蹭运动热点，展示户外运动数据功能",
+                "formula": "\"戴AI眼镜做XX户外运动，数据上眼\"",
+                "keyword": "户外运动"
+              }
+            ]
+          }
+        ]
+      },
+      "xiaohongshu": {
+        "name": "小红书",
+        "count": 30,
+        "categories": [
+          {
+            "title": "社会热点角度",
+            "topics": [
+              {
+                "hotspot": "租房发现隐藏摄像头",
+                "heat": "小红书热议",
+                "source": "小红书站内",
+                "idea": "《租房女生必看：AI眼镜能帮你扫出隐藏摄像头吗？》——安全感选题",
+                "desc": "蹭隐私安全热点，做女生安全感选题，精准人群",
+                "formula": "\"XX人群必看：AI眼镜帮你防XX\"",
+                "keyword": "租房安全"
+              },
+              {
+                "hotspot": "618理性消费/别乱买",
+                "heat": "小红书大促反思",
+                "source": "小红书站内",
+                "idea": "《为什么劝你618别冲动买AI眼镜？看完再决定》——反向种草",
+                "desc": "蹭618反思热点，做反向种草，建立信任",
+                "formula": "\"为什么劝你别急着买XX\"",
+                "keyword": "反向种草"
+              },
+              {
+                "hotspot": "高考/陪考",
+                "heat": "小红书热议",
+                "source": "小红书站内",
+                "idea": "《陪考妈妈实测：AI眼镜帮我盯紧孩子的每个考点时间》",
+                "desc": "蹭高考陪考热点，做妈妈视角实测，情感向",
+                "formula": "\"XX身份用AI眼镜搞定XX大事\"",
+                "keyword": "陪考妈妈"
+              },
+              {
+                "hotspot": "毕业季emo/下一站六月",
+                "heat": "小红书热议",
+                "source": "小红书站内",
+                "idea": "《毕业前用AI眼镜偷偷录下室友的脸，多年后还能认出》——情感向",
+                "desc": "蹭毕业季emo热点，做情感记录，共鸣强",
+                "formula": "\"用AI眼镜留住XX，多年后还在\"",
+                "keyword": "毕业emo"
+              },
+              {
+                "hotspot": "演唱会/追星",
+                "heat": "小红书常青+泰国追演唱会已验证",
+                "source": "小红书站内",
+                "idea": "《演唱会戴AI眼镜值不值？拍偶像高清还是被劝退》——争议向",
+                "desc": "蹭追星热点，做争议向测评，互动性强",
+                "formula": "\"XX场合戴AI眼镜，真香还是踩雷\"",
+                "keyword": "演唱会"
+              },
+              {
+                "hotspot": "AI替代焦虑",
+                "heat": "泛社会热点",
+                "source": "小红书站内",
+                "idea": "《35岁+戴上AI眼镜：是赶上AI还是被AI抛下？》——中年共鸣",
+                "desc": "蹭AI焦虑热点，做中年人群共鸣，深度向",
+                "formula": "\"XX年龄/人群用AI眼镜的真实心态\"",
+                "keyword": "AI焦虑"
+              },
+              {
+                "hotspot": "多种极端天气/出行",
+                "heat": "小红书热议",
+                "source": "小红书站内",
+                "idea": "《通勤女孩实测：AI眼镜抬头报天气，再没被雨淋过》",
+                "desc": "蹭极端天气热点，做通勤场景实测，实用向",
+                "formula": "\"通勤/日常被XX困扰，AI眼镜解决\"",
+                "keyword": "通勤天气"
+              },
+              {
+                "hotspot": "育儿补贴/带娃",
+                "heat": "小红书热议",
+                "source": "小红书站内",
+                "idea": "《全职妈妈的AI眼镜一天：它真能帮我喘口气吗》——真实带娃",
+                "desc": "蹭育儿热点，做全职妈妈一天记录，真实共鸣",
+                "formula": "\"XX忙碌人群的AI眼镜一天\"",
+                "keyword": "全职妈妈"
+              },
+              {
+                "hotspot": "iPhone17/数码降价焦虑",
+                "heat": "小红书发现页高频",
+                "source": "小红书站内",
+                "idea": "《买AI眼镜会像买手机一样一年就过时吗？》——消费决策",
+                "desc": "蹭数码焦虑热点，做消费决策分析，理性向",
+                "formula": "\"XX会不会买了就过时\"",
+                "keyword": "过时焦虑"
+              },
+              {
+                "hotspot": "明星同款",
+                "heat": "赵露思/蔡文静AI墨镜已验证",
+                "source": "小红书站内",
+                "idea": "《扒一扒明星都在戴的AI墨镜，平价同款在这》",
+                "desc": "蹭明星同款热点，做平价推荐，种草向",
+                "formula": "\"明星都在戴的XX，平价同款\"",
+                "keyword": "明星同款"
+              }
+            ]
+          },
+          {
+            "title": "产品测评角度",
+            "topics": [
+              {
+                "hotspot": "618锁单/比价",
+                "heat": "小红书发现页满屏",
+                "source": "小红书站内",
+                "idea": "《618 AI眼镜锁单清单：不同预算闭眼抄》",
+                "desc": "蹭618热点，做锁单清单，直接带转化",
+                "formula": "\"618 XX闭眼入清单，按预算抄\"",
+                "keyword": "618清单"
+              },
+              {
+                "hotspot": "夏日穿搭/多巴胺",
+                "heat": "小红书热议",
+                "source": "小红书站内",
+                "idea": "《显白又显脸小？AI眼镜镜框选色挑款指南》——颜值向测评",
+                "desc": "蹭穿搭热点，做选色挑款指南，颜值向",
+                "formula": "\"XX怎么选色挑款显脸小\"",
+                "keyword": "选色挑款"
+              },
+              {
+                "hotspot": "苹果AI眼镜传闻/等不等",
+                "heat": "小红书热议",
+                "source": "小红书站内",
+                "idea": "《AI眼镜对比｜等苹果还是现在入手？》——决策对比（已验证选题，可复用）",
+                "desc": "蹭苹果传闻热点，做决策对比，已验证爆款",
+                "formula": "\"等XX还是现在入手YY\"",
+                "keyword": "等苹果"
+              },
+              {
+                "hotspot": "近视党痛点",
+                "heat": "小红书高频",
+                "source": "小红书站内",
+                "idea": "《近视党怎么戴AI眼镜？定制镜片/隐形眼镜实测》",
+                "desc": "蹭近视痛点热点，做特殊人群指南，精准",
+                "formula": "\"XX特殊人群怎么用XX\"",
+                "keyword": "近视党"
+              },
+              {
+                "hotspot": "高价值不值",
+                "heat": "Meta彩屏已验证",
+                "source": "小红书站内",
+                "idea": "《花6000买Meta AI眼镜值吗？国产平替对比》",
+                "desc": "蹭高端款热点，做值不值测评+平替对比",
+                "formula": "\"花XX买高端款值不值\"",
+                "keyword": "高端值不值"
+              },
+              {
+                "hotspot": "毕业季送礼",
+                "heat": "小红书热议",
+                "source": "小红书站内",
+                "idea": "《送毕业生/送爸妈AI眼镜，哪款最不踩雷》",
+                "desc": "蹭毕业送礼热点，做送礼指南，决策向",
+                "formula": "\"送XX人群XX怎么选最稳\"",
+                "keyword": "送礼指南"
+              },
+              {
+                "hotspot": "理想/新势力AI眼镜到手",
+                "heat": "小红书热议",
+                "source": "小红书站内",
+                "idea": "《理想/小米/夸克AI眼镜，学生党到手对比》",
+                "desc": "蹭新势力热点，做学生党到手对比",
+                "formula": "\"N款XX到手真实对比\"",
+                "keyword": "新势力对比"
+              },
+              {
+                "hotspot": "翻译刚需",
+                "heat": "出国季",
+                "source": "小红书站内",
+                "idea": "《暑期出国前必看：翻译AI眼镜怎么选不踩雷》",
+                "desc": "蹭出国季热点，做翻译眼镜选购指南",
+                "formula": "\"XX之前必看：XX怎么选\"",
+                "keyword": "翻译选购"
+              },
+              {
+                "hotspot": "主流测评合集需求",
+                "heat": "小红书常青",
+                "source": "小红书站内",
+                "idea": "《主流AI眼镜一篇看全｜收藏级测评》——收藏向",
+                "desc": "做收藏级测评合集，长尾流量",
+                "formula": "\"主流XX一篇看全，收藏级\"",
+                "keyword": "收藏测评"
+              },
+              {
+                "hotspot": "良心建议人设",
+                "heat": "已验证",
+                "source": "小红书站内",
+                "idea": "《XX亲测3个月：AI眼镜的良心大实话》",
+                "desc": "做良心建议人设，建立信任，已验证",
+                "formula": "\"亲测N个月，XX的大实话\"",
+                "keyword": "良心大实话"
+              }
+            ]
+          },
+          {
+            "title": "生活方式角度",
+            "topics": [
+              {
+                "hotspot": "毕业旅行/此刻地理在脚下",
+                "heat": "小红书热议",
+                "source": "小红书站内",
+                "idea": "《毕业旅行戴AI眼镜：走到哪AI讲到哪，比导游还懂》",
+                "desc": "蹭旅行热点，展示AI导游功能，实用向",
+                "formula": "\"戴AI眼镜去XX旅行，AI当私人导游\"",
+                "keyword": "旅行导游"
+              },
+              {
+                "hotspot": "夏日穿搭挑战",
+                "heat": "董洁一周不重样",
+                "source": "小红书站内",
+                "idea": "《AI眼镜怎么搭才高级？夏日7套穿搭示范》",
+                "desc": "蹭穿搭挑战热点，做穿搭示范，颜值向",
+                "formula": "\"XX怎么搭出高级感，N套示范\"",
+                "keyword": "穿搭示范"
+              },
+              {
+                "hotspot": "演唱会/追星季",
+                "heat": "小红书常青",
+                "source": "小红书站内",
+                "idea": "《去看演唱会戴AI眼镜：拍偶像还能实时翻歌词》",
+                "desc": "蹭演唱会热点，展示隐藏玩法，趣味向",
+                "formula": "\"XX现场戴AI眼镜的隐藏玩法\"",
+                "keyword": "演唱会玩法"
+              },
+              {
+                "hotspot": "Citywalk/晚霞成诗",
+                "heat": "小红书热议",
+                "source": "小红书站内",
+                "idea": "《周末Citywalk戴AI眼镜：边走边被AI种草小店》",
+                "desc": "蹭Citywalk热点，展示AI种草功能，生活向",
+                "formula": "\"戴AI眼镜Citywalk，AI实时种草\"",
+                "keyword": "Citywalk"
+              },
+              {
+                "hotspot": "外派/留学/跨国",
+                "heat": "已验证场景",
+                "source": "小红书站内",
+                "idea": "《外派/留学党的AI眼镜：救我于语言不通的100个瞬间》",
+                "desc": "蹭跨国热点，做救命瞬间合集，情感向",
+                "formula": "\"XX异国身份，AI眼镜救命瞬间\"",
+                "keyword": "留学外派"
+              },
+              {
+                "hotspot": "六一/亲子",
+                "heat": "小红书热议",
+                "source": "小红书站内",
+                "idea": "《带娃出游戴AI眼镜：认花认草认动物，娃问不倒我》",
+                "desc": "蹭六一热点，展示亲子百科功能",
+                "formula": "\"带娃时戴AI眼镜，AI当百科全书\"",
+                "keyword": "亲子百科"
+              },
+              {
+                "hotspot": "备孕/新手妈妈",
+                "heat": "抖音育儿迁移",
+                "source": "跨平台",
+                "idea": "《新手妈妈的AI眼镜：喂奶哄睡时也能查攻略不手忙脚乱》",
+                "desc": "蹭育儿热点，展示解放双手功能",
+                "formula": "\"XX忙碌场景，AI眼镜解放双手\"",
+                "keyword": "新手妈妈"
+              },
+              {
+                "hotspot": "减脂/居家健身",
+                "heat": "全平台高频",
+                "source": "小红书站内",
+                "idea": "《跟练戴AI眼镜：动作不标准AI当场提醒，比私教香》",
+                "desc": "蹭健身热点，展示AI私教功能",
+                "formula": "\"戴AI眼镜跟练XX，AI当私教\"",
+                "keyword": "AI私教"
+              },
+              {
+                "hotspot": "iPhone17/数码党生活",
+                "heat": "小红书热议",
+                "source": "小红书站内",
+                "idea": "《数码女孩的桌面+随身装备：AI眼镜怎么融入日常》",
+                "desc": "蹭数码热点，做装备展示，人设向",
+                "formula": "\"XX人设的随身装备里有AI眼镜\"",
+                "keyword": "数码装备"
+              },
+              {
+                "hotspot": "明星私服同款",
+                "heat": "小红书常青",
+                "source": "小红书站内",
+                "idea": "《明星机场都在戴的AI墨镜，我也跟着戴了一周》",
+                "desc": "蹭明星私服热点，做一周体验，种草向",
+                "formula": "\"跟着明星戴XX一周体验\"",
+                "keyword": "明星私服"
+              }
+            ]
+          }
+        ]
+      }
+    },
+  "risks": [
+    {
+      "title": "高考/考试类",
+      "desc": "绝对禁止暗示AI眼镜可用于考试作弊。正确立场：强调考后学习辅助、日常复习工具。"
+    },
+    {
+      "title": "隐私类",
+      "desc": "必须明确告知被拍摄者并获得口头同意。强调AI眼镜的隐私保护模式。"
+    },
+    {
+      "title": "信息核验类",
+      "desc": "AI回答可能存在错误，涉及投资、医疗等严肃话题时必须标注仅供参考。"
+    },
+    {
+      "title": "网暴/取证类",
+      "desc": "聚焦正向价值（自我保护），避免引导监控他人或侵犯隐私。"
+    }
+  ]
+},
+  "2026-06-08": {
+  "date": "2026-06-08",
+  "source": "实地抓取抖音热榜、B站全站排行榜、小红书发现页/推荐流，采集时间 2026-06-08",
+  "top3": [
+    {
+      "title": "「当我戴着AI眼镜出门，路人反应太真实了」",
+      "hotspot": "抖音 #你怎么知道我刚买了智能眼镜（779.3万热度）",
+      "difficulty": "低（街头社交实验，1天可拍完）",
+      "stars": 5
+    },
+    {
+      "title": "「如果AI眼镜能参加高考，它能考多少分？」",
+      "hotspot": "B站高考微电影（第4）+ 抖音高考全系列（合计超5000万热度）",
+      "difficulty": "中（需要准备各科目试题+剪辑对比）",
+      "stars": 5,
+      "warning": "立场必须站\"AI是辅助工具，不能替代人的努力\""
+    },
+    {
+      "title": "「带爸妈旅行，AI眼镜让我重新认识他们」",
+      "hotspot": "小红书「和爸妈出去玩意识到了自己的傲慢」（10万+赞）",
+      "difficulty": "中（需要安排一次短途旅行，2-3天素材）",
+      "stars": 4
+    }
+  ],
+  "platforms": {
+    "douyin": {
+      "name": "抖音",
+      "count": 14,
+      "categories": [
+        {
+          "title": "社会热点角度",
+          "topics": [
+            {
+              "hotspot": "2026高考季系列",
+              "heat": "1191.5万热度",
+              "source": "抖音热榜",
+              "idea": "「AI眼镜第一视角：我替弟弟参加了高考」",
+              "desc": "达人以POV视角记录佩戴AI眼镜全程陪考/送考，用语音备忘提醒考试时间、用实时翻译查不认识的古诗词、用拍照搜题辅助复习（强调考后复盘学习用途）。结尾情感升华：科技是翅膀，但笔还是要自己握。",
+              "formula": "社会大事件 + POV第一视角 + 情感反转 + \"科技向善\"价值观兜底",
+              "keyword": "2026高考"
+            },
+            {
+              "hotspot": "朝鲜平壤街头挂起五星红旗",
+              "heat": "1200.2万热度",
+              "source": "抖音热榜第1",
+              "idea": "「戴着AI眼镜看朝鲜：第一视角翻译路牌+实时科普建筑历史」",
+              "desc": "达人用AI眼镜的实时翻译/识图功能，配合新闻画面做\"云旅游\"解说，把国际新闻变成科技种草内容。",
+              "formula": "国际新闻热点 + AI实时翻译/识图 + \"云旅游\"解说型内容",
+              "keyword": "朝鲜平壤五星红旗"
+            },
+            {
+              "hotspot": "菲律宾群岛地区发生7.9级地震",
+              "heat": "981.8万热度",
+              "source": "抖音热榜第7",
+              "idea": "「地震逃生时，AI眼镜能救你一命吗？」",
+              "desc": "模拟地震场景，测试AI眼镜的紧急SOS、离线导航、手电筒、实时灾害预警推送等功能。科普向+测评向结合。",
+              "formula": "灾害事件 + 安全科普 + 产品功能极限测试 + 正向价值观",
+              "keyword": "菲律宾地震"
+            },
+            {
+              "hotspot": "A股",
+              "heat": "1200.2万热度",
+              "source": "抖音热榜第2",
+              "idea": "「炒股专用AI眼镜：不再做韭菜，因为我有第三只眼」",
+              "desc": "达人戴着AI眼镜看盘，展示语音播报股价、实时K线叠加、AI研报速读等功能。配合近期股市热点，做\"股民神器\"人设。",
+              "formula": "财经热点 + 特定人群痛点（股民）+ 功能场景化展示",
+              "keyword": "A股"
+            },
+            {
+              "hotspot": "我国新型滚装船下水",
+              "heat": "1180.3万热度",
+              "source": "抖音热榜第3",
+              "idea": "「在军迷展会上，我的AI眼镜成了全场焦点」",
+              "desc": "达人佩戴AI眼镜参观军事/科技展览，用AI识图识别装备型号、语音查询参数、实时叠加AR信息。吸引军迷+科技双圈层。",
+              "formula": "国防科技热点 + 展会场景 + AR识图叠加 + 圈层渗透",
+              "keyword": "新型滚装船下水"
+            }
+          ]
+        },
+        {
+          "title": "产品测评角度",
+          "topics": [
+            {
+              "hotspot": "你怎么知道我刚买了智能眼镜",
+              "heat": "779.3万热度",
+              "source": "抖音热榜第13",
+              "idea": "「当我戴着AI眼镜出门，路人反应太真实了」",
+              "desc": "直接蹭该热点话题，拍街头社交实验：戴着AI眼镜去逛街/坐地铁/约会，记录路人好奇询问、朋友惊讶反应。结尾反转：不是炫耀，是真的摘不下来了。",
+              "formula": "热点话题原生复用 + 社交实验/街头挑战 + 真实反应切片",
+              "keyword": "你怎么知道我刚买了智能眼镜"
+            },
+            {
+              "hotspot": "苹果系穿搭深得我心",
+              "heat": "897.7万热度",
+              "source": "抖音热榜第9",
+              "idea": "「苹果女孩的新配饰：这副AI眼镜让我穿搭升级」",
+              "desc": "把AI眼镜包装成时尚单品，拍OOTD穿搭视频，强调眼镜的轻薄设计、多色镜框、与iPhone生态联动。蹭苹果流量+穿搭流量。",
+              "formula": "时尚穿搭热点 + 科技产品时尚化 + 颜值种草 + 生态联动",
+              "keyword": "苹果系穿搭"
+            },
+            {
+              "hotspot": "这下董亮的手机真的\"没有\"了",
+              "heat": "766.0万热度",
+              "source": "抖音热榜第38",
+              "idea": "「手机丢了，我靠AI眼镜活了一天」",
+              "desc": "挑战类内容：达人故意不带手机，只戴AI眼镜完成一天的工作/社交/支付/导航。对比手机依赖，突出AI眼镜的独立性。",
+              "formula": "轻剧情挑战 + 极端场景测试 + 手机替代叙事",
+              "keyword": "手机丢了怎么办"
+            },
+            {
+              "hotspot": "我的电蚊拍比烟花闪",
+              "heat": "768.4万热度",
+              "source": "抖音热榜第29",
+              "idea": "「夏夜露营，我的AI眼镜比电蚊拍还忙」",
+              "desc": "夏季露营场景，用AI眼镜拍星空延时、识别昆虫、夜视模式、语音放音乐。蹭夏日户外+电蚊拍搞笑流量。",
+              "formula": "季节场景（夏夜/露营）+ 多功能的趣味串联 + 视觉反差",
+              "keyword": "夏夜露营"
+            }
+          ]
+        },
+        {
+          "title": "生活方式角度",
+          "topics": [
+            {
+              "hotspot": "哈兰德获哈兰德模仿大赛第二名",
+              "heat": "852.4万热度",
+              "source": "抖音热榜第10",
+              "idea": "「足球场边戴AI眼镜看哈兰德：第一视角进球回放+AI实时数据分析」",
+              "desc": "达人去足球场/看球聚会，用AI眼镜录制第一视角观赛，叠加AI实时球员数据、进球回放、语音弹幕互动。体育+科技双流量。",
+              "formula": "体育赛事热点 + 第一视角沉浸观赛 + 数据可视化叠加",
+              "keyword": "哈兰德模仿大赛"
+            },
+            {
+              "hotspot": "西湖的荷花开了",
+              "heat": "775.0万热度",
+              "source": "抖音热榜第17",
+              "idea": "「戴AI眼镜逛西湖：AI帮我认出了28种荷花」",
+              "desc": "旅游vlog形式，用AI眼镜的识图功能识别植物、翻译景点介绍、语音导览。拍成\"科技版\"诗意江南。",
+              "formula": "季节/旅游热点 + AI识图科普 + 诗意叙事 + 文化加成",
+              "keyword": "西湖荷花"
+            },
+            {
+              "hotspot": "王源文淇新片怀疑世界是剧本",
+              "heat": "765.5万热度",
+              "source": "抖音热榜第40",
+              "idea": "「戴着AI眼镜看电影：它说这世界真的是剧本」",
+              "desc": "达人在影院/在家用AI眼镜观影，测试AI实时字幕、剧情解读、演员识别、彩蛋提示等功能。蹭电影上映流量。",
+              "formula": "影视上映热点 + 观影场景化测评 + 彩蛋/幕后信息叠加",
+              "keyword": "王源文淇新片"
+            },
+            {
+              "hotspot": "成何体统2现代婚礼夯爆了",
+              "heat": "763.5万热度",
+              "source": "抖音热榜第49",
+              "idea": "「我在婚礼上戴了AI眼镜，新娘说我是最忙的伴娘」",
+              "desc": "婚礼场景第一视角：用AI眼镜拍照录像、识别宾客身份（提前录入）、语音提醒流程、实时翻译外籍宾客。情感+科技。",
+              "formula": "社交仪式场景（婚礼/聚会）+ 第一视角记录 + 社交辅助功能",
+              "keyword": "成何体统2婚礼"
+            },
+            {
+              "hotspot": "黑熊NPC把漂流玩成了整活局",
+              "heat": "764.7万热度",
+              "source": "抖音热榜第44",
+              "idea": "「游乐园NPC视角：我的AI眼镜记录了100个游客的表情」",
+              "desc": "达人应聘/扮演游乐园NPC，用AI眼镜第一视角记录游客互动、识别游客情绪、即兴语音编台词。整活+科技。",
+              "formula": "娱乐场景（游乐园/密室）+ NPC视角 + 情绪识别 + 整活反差",
+              "keyword": "黑熊NPC漂流"
+            }
+          ]
+        }
+      ]
+    },
+    "bilibili": {
+      "name": "B站",
+      "count": 6,
+      "categories": [
+        {
+          "title": "社会热点角度",
+          "topics": [
+            {
+              "hotspot": "【微电影】人类文明的最后一届高考",
+              "heat": "排行榜第4",
+              "source": "B站全站排行",
+              "idea": "「如果AI眼镜能参加高考，它能考多少分？」",
+              "desc": "用AI眼镜做题测试：语文作文、数学计算、英语听力、历史知识问答。对比AI与人类考生的答题思路，结尾升华：工具再强，也比不上考场里那支笔的意义。",
+              "formula": "高考热点 + AI能力边界测试 + 人文关怀收尾",
+              "keyword": "人类文明最后一届高考"
+            },
+            {
+              "hotspot": "激光雷达真成\"安全气囊\"了？",
+              "heat": "排行榜第33",
+              "source": "B站全站排行",
+              "idea": "「激光雷达都上车了，AI眼镜里的激光雷达能干啥？」",
+              "desc": "硬核科普向：拆解/讲解AI眼镜的空间感知、SLAM导航、手势识别背后的传感器原理，类比汽车激光雷达。蹭汽车科技流量。",
+              "formula": "汽车科技热点 + 传感器技术科普 + 跨界类比",
+              "keyword": "激光雷达安全气囊"
+            }
+          ]
+        },
+        {
+          "title": "产品测评角度",
+          "topics": [
+            {
+              "hotspot": "《归唐》19分钟完整实机演示",
+              "heat": "排行榜第3",
+              "source": "B站全站排行",
+              "idea": "「用AI眼镜玩《归唐》：第一视角+眼动追踪操控」",
+              "desc": "游戏测评向：连接AI眼镜与游戏主机/PC，测试第一视角显示、眼动追踪瞄准、语音指令施法、AR地图导航。游戏+科技双流量。",
+              "formula": "游戏大作热点 + 第一视角沉浸体验 + 新型交互方式（眼动/语音）",
+              "keyword": "归唐实机演示"
+            },
+            {
+              "hotspot": "《绝区零》3.0新地块实机演示",
+              "heat": "排行榜第29",
+              "source": "B站全站排行",
+              "idea": "「绝区零3.0+AI眼镜=我直接住进了新艾利都」",
+              "desc": "米哈游游戏+AI眼镜的沉浸式体验测评，强调画面显示、空间音频、AI角色语音互动。精准切米哈游玩家圈层。",
+              "formula": "米哈游游戏热点 + 沉浸式体验 + 角色语音互动",
+              "keyword": "绝区零3.0"
+            }
+          ]
+        },
+        {
+          "title": "生活方式角度",
+          "topics": [
+            {
+              "hotspot": "在沙漠里种了1800万棵树",
+              "heat": "排行榜第26",
+              "source": "影视飓风",
+              "idea": "「戴着AI眼镜去阿拉善种树：第一视角记录每一棵树的成长」",
+              "desc": "公益/环保向vlog：达人参与植树活动，用AI眼镜记录第一视角劳动、识别植物种类、监测土壤数据、语音记录心情。科技+公益，品牌好感度拉满。",
+              "formula": "环保公益热点 + 第一视角记录 + 数据监测 + 正能量叙事",
+              "keyword": "沙漠种树1800万棵"
+            },
+            {
+              "hotspot": "如何拍出电影感大片",
+              "heat": "排行榜第46",
+              "source": "B站全站排行",
+              "idea": "「电影感大片的秘密：我放下了相机，戴上了AI眼镜」",
+              "desc": "摄影教学向：用AI眼镜拍摄第一视角\"电影感\"短片，展示AI辅助构图、自动调色、语音控制拍摄、稳定画面。对比传统相机，突出便捷性。",
+              "formula": "摄影教学热点 + 传统vs科技对比 + 视觉美感展示",
+              "keyword": "如何拍出电影感大片"
+            }
+          ]
+        }
+      ]
+    },
+    "xiaohongshu": {
+      "name": "小红书",
+      "count": 6,
+      "categories": [
+        {
+          "title": "社会热点角度",
+          "topics": [
+            {
+              "hotspot": "于适25年发的博文压中26年高考作文",
+              "heat": "3816赞",
+              "source": "小红书发现页",
+              "idea": "「于适压中作文题？我的AI眼镜早就预测到了」",
+              "desc": "达人用AI眼镜的AI助手功能分析历年高考作文趋势、预测热点话题，蹭于适+高考双重流量。可做成\"AI预测挑战\"系列。",
+              "formula": "明星热点 + 高考热点 + AI预测能力展示 + 挑战系列",
+              "keyword": "于适高考作文"
+            },
+            {
+              "hotspot": "和爸妈出去玩意识到了自己的傲慢",
+              "heat": "10万+赞",
+              "source": "小红书发现页",
+              "idea": "「带爸妈旅行，AI眼镜让我重新认识他们」",
+              "desc": "情感向vlog：用AI眼镜第一视角记录带父母旅行，AI翻译帮助父母与外国人交流、AI识图讲解父母感兴趣的景点、语音记录父母的青春故事。亲情+科技，高转粉内容。",
+              "formula": "亲情/情感热点 + 第一视角记录 + 代际互动 + 故事挖掘",
+              "keyword": "和爸妈出去玩"
+            }
+          ]
+        },
+        {
+          "title": "产品测评角度",
+          "topics": [
+            {
+              "hotspot": "iPhone17pro的五年使用计划",
+              "heat": "4878赞",
+              "source": "小红书发现页",
+              "idea": "「我的AI眼镜五年使用计划：从尝鲜到离不开」",
+              "desc": "对标iPhone长期使用计划，做AI眼镜的长期主义内容：第1周新鲜功能探索、第1月场景适配、第1年习惯养成、第5年成为身体一部分。蹭数码长期评测流量。",
+              "formula": "数码评测热点 + 长期使用规划 + 习惯养成叙事 + 身体延伸感",
+              "keyword": "iPhone17pro五年使用计划"
+            },
+            {
+              "hotspot": "苹果14灵动岛刚出的时候有多惊艳",
+              "heat": "691赞",
+              "source": "小红书发现页",
+              "idea": "「AI眼镜的'灵动岛'时刻：这些功能让我 wow 出声」",
+              "desc": "类比苹果灵动岛，盘点AI眼镜最惊艳的瞬间：第一次语音操控拍照、第一次实时翻译听懂外语、第一次AR导航不迷路。蹭苹果经典功能回忆流量。",
+              "formula": "经典功能回忆 + 类比叙事 + 惊艳瞬间盘点",
+              "keyword": "苹果灵动岛"
+            }
+          ]
+        },
+        {
+          "title": "生活方式角度",
+          "topics": [
+            {
+              "hotspot": "盒马冰淇淋巨好吃 / 喜茶最好喝的一杯",
+              "heat": "3435赞",
+              "source": "小红书发现页",
+              "idea": "「POV：戴着AI眼镜逛盒马/喜茶，我的手根本停不下来」",
+              "desc": "美食探店第一视角：用AI眼镜识别食材热量、语音记录口感评价、拍照发小红书。美食+科技，轻量种草。",
+              "formula": "美食探店热点 + POV第一视角 + 热量识别 + 轻种草",
+              "keyword": "盒马冰淇淋好吃"
+            },
+            {
+              "hotspot": "为夏天准备的小白裙",
+              "heat": "1706赞",
+              "source": "小红书发现页",
+              "idea": "「夏日穿搭小心机：这副AI眼镜比小白裙还百搭」",
+              "desc": "时尚穿搭向：拍夏日OOTD，展示AI眼镜作为配饰与不同风格穿搭的搭配（甜妹/御姐/运动/通勤）。颜值种草。",
+              "formula": "季节穿搭热点 + 配饰搭配 + 颜值展示 + 风格多样性",
+              "keyword": "夏天小白裙穿搭"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "risks": [
+    { "title": "高考/考试类", "desc": "绝对禁止暗示\"AI眼镜可用于考试作弊\"。正确立场：强调\"考后学习辅助\"、\"日常复习工具\"。合规话术：\"本视频所有功能展示均在考试场景外进行\"。" },
+    { "title": "隐私类", "desc": "必须明确告知被拍摄者并获得口头同意。强调AI眼镜的\"隐私保护模式\"（指示灯亮起提示录制中）。避免在敏感场所拍摄。" },
+    { "title": "医疗/健康类", "desc": "不得宣称AI眼镜具有医疗诊断功能。健康监测数据仅供参考，必须标注\"非医疗器械，数据不作为诊断依据\"。" },
+    { "title": "军事/时政类", "desc": "避免涉及敏感军事信息。聚焦民用科技科普，不讨论具体战术/装备参数。" },
+    { "title": "灾害类", "desc": "以安全科普、应急功能介绍为主，不消费灾难本身。避免使用灾难现场血腥/恐怖画面。" }
+  ]
+}
+};
+
+// === 各平台原始热榜数据（可跳转搜索） ===
+const HOTLIST_DATA = {
+  "2026-06-02": {
+    "douyin": [
+      {"title":"普通人也能穿的夏日美女感穿搭","heat":"1173.9万"},
+      {"title":"加快推进贸易高质量发展","heat":"1173.9万"},
+      {"title":"网警查处网暴抗洪村支书的网民","heat":"1169.6万"},
+      {"title":"中国智造打印全球","heat":"1137.9万"},
+      {"title":"4378万公里地下管网加速扩张","heat":"1119.4万"},
+      {"title":"王楚钦担任国乒男队队长","heat":"1027.0万"},
+      {"title":"海边Hyrox才是夏日顶配","heat":"917.7万"},
+      {"title":"哈尔滨同时出现多种极端天气","heat":"898.4万"},
+      {"title":"中央财政下达育儿补贴999亿","heat":"877.2万"},
+      {"title":"英伟达股价大涨","heat":"856.4万"},
+      {"title":"三招识破汛期灾情谣言","heat":"843.6万"},
+      {"title":"平静是另一种蓬勃","heat":"769.7万"},
+      {"title":"外国友人感受中餐的魅力","heat":"766.5万"},
+      {"title":"群星为高考生送祝福","heat":"765.7万"},
+      {"title":"跟着董洁挑战一周穿搭不重样","heat":"765.5万"},
+      {"title":"晚霞就是天空的诗","heat":"764.4万"}
+    ],
+    "bilibili": [
+      {"title":"毕导酒变色妖术科普","heat":"847.7万播放"},
+      {"title":"高考和漫展时间冲突应该参加哪个","heat":"409.9万播放"},
+      {"title":"你好丝滑","heat":"399.8万播放"},
+      {"title":"史上最骚特工","heat":"399万播放"},
+      {"title":"网络热传生物鉴定第61期","heat":"373.6万播放"},
+      {"title":"印度的热度越来越高","heat":"296.5万播放"},
+      {"title":"不知道吃什么就看这个视频","heat":"290.3万播放"},
+      {"title":"8岁到18岁陌生人街头接力问答","heat":"249.1万播放"},
+      {"title":"网上支持我线下独自对抗全世界","heat":"241.7万播放"},
+      {"title":"回忆永远是加分项","heat":"192.9万播放"},
+      {"title":"用3分钟记录我们的夏天","heat":"42.9万播放"}
+    ],
+    "xiaohongshu": [
+      {"title":"当小猫穿上瑜伽裤","heat":"4.6万赞"},
+      {"title":"陪男朋友买车后续","heat":"3.9万赞"},
+      {"title":"网购iPhone务必检查原装屏","heat":"3777赞"},
+      {"title":"韩系罩衫高级慵懒又百搭","heat":"3560赞"},
+      {"title":"夏日好穿短袖百搭实穿","heat":"2590赞"},
+      {"title":"杜华无奈逆子从哪游泳回来了","heat":"2194赞"},
+      {"title":"iPhone17Pro拍照好好看","heat":"1895赞"},
+      {"title":"微微一笑很倾城翻拍","heat":"1.3万赞"},
+      {"title":"5月最新热点事件盘点","heat":"1629赞"},
+      {"title":"蔡文静治愈焦虑","heat":"1260赞"},
+      {"title":"WWDC26 6月9日见","heat":"1014赞"},
+      {"title":"iPhone Ultra本月量产","heat":"589赞"}
+    ]
+  },
+  "2026-06-08": {
+    "douyin": [
+      {"title":"朝鲜平壤街头挂起五星红旗","heat":"1200.2万"},
+      {"title":"A股","heat":"1200.2万"},
+      {"title":"2026高考物理","heat":"1191.5万"},
+      {"title":"我国新型滚装船下水","heat":"1180.3万"},
+      {"title":"菲律宾群岛地区发生7.9级地震","heat":"981.8万"},
+      {"title":"苹果系穿搭深得我心","heat":"897.7万"},
+      {"title":"哈兰德获哈兰德模仿大赛第二名","heat":"852.4万"},
+      {"title":"你怎么知道我刚买了智能眼镜","heat":"779.3万"},
+      {"title":"西湖的荷花开了","heat":"775.0万"},
+      {"title":"高考作文","heat":"770.7万"},
+      {"title":"高考数学","heat":"770.6万"},
+      {"title":"王源文淇新片怀疑世界是剧本","heat":"765.5万"},
+      {"title":"黑熊NPC把漂流玩成了整活局","heat":"764.7万"},
+      {"title":"成何体统2现代婚礼夯爆了","heat":"763.5万"}
+    ],
+    "bilibili": [
+      {"title":"公测定档7月遗忘之海船员集结MV","heat":"第1名"},
+      {"title":"英国沦为印度殖民地","heat":"第2名"},
+      {"title":"归唐19分钟完整实机演示","heat":"第3名"},
+      {"title":"人类文明的最后一届高考","heat":"第4名"},
+      {"title":"一氧化二氢能钓出多少读稿机","heat":"第5名"},
+      {"title":"古剑3分钟战斗实机","heat":"第7名"},
+      {"title":"穿越火线潜伏实机首曝","heat":"第10名"},
+      {"title":"热烈欢迎薛凯琪","heat":"第15名"},
+      {"title":"在沙漠里种了1800万棵树","heat":"第26名"},
+      {"title":"绝区零3.0新地块实机演示","heat":"第29名"},
+      {"title":"激光雷达真成安全气囊了","heat":"第33名"},
+      {"title":"如何拍出电影感大片","heat":"第46名"}
+    ],
+    "xiaohongshu": [
+      {"title":"于适25年发的博文压中26年高考作文","heat":"3816赞"},
+      {"title":"和爸妈出去玩意识到了自己的傲慢","heat":"10万+赞"},
+      {"title":"iPhone17pro的五年使用计划","heat":"4878赞"},
+      {"title":"盒马这个冰淇淋真的巨好吃","heat":"3435赞"},
+      {"title":"为夏天准备的小白裙","heat":"1706赞"},
+      {"title":"苹果14灵动岛刚出的时候有多惊艳","heat":"691赞"},
+      {"title":"喜茶今年最好喝的一杯出现了","heat":"268赞"}
+    ]
+  }
+};
+
+// === 每周更新时，在 weekIndex 数组最前面追加新一周的条目即可 ===
+// === 同时在上面的 EMBEDDED_DATA 中追加对应日期的数据对象 ===
+const weekIndex = [
+  { date: "2026-06-08", label: "2026-06-08（第24周）", file: "2026-06-08" },
+  { date: "2026-06-02", label: "2026-06-02（第23周）", file: "2026-06-02" }
+  // 示例：下周追加时在这里加一行：
+  // { date: "2026-06-15", label: "2026-06-15（第25周）", file: "2026-06-15" },
+  // 并在 EMBEDDED_DATA 中加入 "2026-06-15": { ... } 数据
+].sort((a, b) => b.date.localeCompare(a.date)); // 自动按日期倒序，最新在前
+
+function getPlatformSearchURL(platform, keyword) {
+  const encoded = encodeURIComponent(keyword);
+  const urls = {
+    douyin: `https://www.douyin.com/search/${encoded}`,
+    bilibili: `https://search.bilibili.com/all?keyword=${encoded}`,
+    xiaohongshu: `https://www.xiaohongshu.com/search_result?keyword=${encoded}`
+  };
+  return urls[platform] || '#';
+}
+
+function renderStars(count) {
+  return '\u2B50'.repeat(count);
+}
+
+function renderTop3(top3) {
+  return `
+    <div class="top3-section">
+      <h2>\uD83D\uDD25 本期最该立刻拍的三连</h2>
+      <div class="top3-list">
+        ${top3.map((item, i) => `
+          <div class="top3-item">
+            <div class="rank">TOP ${i + 1}</div>
+            <div class="title">${item.title}</div>
+            <div class="meta">蹭：${item.hotspot} · 难度：${item.difficulty}</div>
+            <div class="stars">爆款指数：${renderStars(item.stars)}</div>
+            ${item.warning ? `<div class="warning">\u26A0\uFE0F ${item.warning}</div>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderPlatform(key, platform, data) {
+  const categories = data.categories.map(cat => `
+    <div class="category-title">${cat.title}</div>
+    <div class="topics-grid">
+      ${cat.topics.map(topic => `
+        <div class="topic-card">
+          <a class="card-link" href="${getPlatformSearchURL(key, topic.keyword)}" target="_blank" rel="noopener"></a>
+          <span class="link-hint">\u2197</span>
+          <div>
+            <span class="hotspot-tag">${topic.hotspot}</span>
+            <span class="heat">${topic.heat}</span>
+          </div>
+          <div class="idea">${topic.idea}</div>
+          <div class="desc">${topic.desc}</div>
+          <div class="formula">\uD83D\uDCD0 ${topic.formula}</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+  return `<div class="platform-panel" id="panel-${key}">${categories}</div>`;
+}
+
+function renderRisks(risks) {
+  return `
+    <div class="risk-section">
+      <h3>\uD83D\uDEA8 风险红线提醒</h3>
+      ${risks.map(r => `
+        <div class="risk-item"><strong>${r.title}：</strong>${r.desc}</div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderHotlist(platforms, weekDate) {
+  const platformNames = { douyin: '抖音热榜', bilibili: 'B站排行榜', xiaohongshu: '小红书热点' };
+  const hotlistData = HOTLIST_DATA[weekDate] || {};
+  const platformSections = Object.keys(platforms).map(key => {
+    const items = hotlistData[key] || [];
+    if (items.length === 0) return '';
+    const itemsHtml = items.map(item => {
+      const url = getPlatformSearchURL(key, item.title);
+      return `<a class="hotlist-item" href="${url}" target="_blank" rel="noopener">${item.title}<span class="hot-heat">${item.heat}</span></a>`;
+    }).join('');
+    return `
+      <div class="hotlist-platform">
+        <h4>${platformNames[key] || platforms[key].name}</h4>
+        <div class="hotlist-items">${itemsHtml}</div>
+      </div>
+    `;
+  }).join('');
+  if (!platformSections.trim()) return '';
+  return `
+    <div class="hotlist-section">
+      <h3>\uD83D\uDCCA 本周各平台热榜数据来源</h3>
+      ${platformSections}
+    </div>
+  `;
+}
+
+function renderData(data) {
+  const platformKeys = Object.keys(data.platforms);
+  const tabs = platformKeys.map((key, i) => {
+    const p = data.platforms[key];
+    return `<button class="tab-btn ${i === 0 ? 'active' : ''}" data-platform="${key}">${p.name}（${p.count}条）</button>`;
+  }).join('');
+
+  const panels = platformKeys.map((key, i) => {
+    const html = renderPlatform(key, data.platforms[key], data.platforms[key]);
+    return html.replace('class="platform-panel"', `class="platform-panel ${i === 0 ? 'active' : ''}"`);
+  }).join('');
+
+  const contentEl = document.getElementById('content');
+  contentEl.innerHTML = `
+    ${renderTop3(data.top3)}
+    <div class="tabs">${tabs}</div>
+    ${panels}
+    ${renderRisks(data.risks)}
+    ${renderHotlist(data.platforms, data.date)}
+    <div class="source-note">${data.source}</div>
+  `;
+
+  // Tab switching
+  contentEl.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      contentEl.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      contentEl.querySelectorAll('.platform-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(`panel-${btn.dataset.platform}`).classList.add('active');
+    });
+  });
+}
+
+function loadWeek(key) {
+  const contentEl = document.getElementById('content');
+  const data = EMBEDDED_DATA[key];
+  if (data) {
+    renderData(data);
+  } else {
+    contentEl.innerHTML = '<div class="loading">未找到该周数据</div>';
+  }
+}
+
+function init() {
+  const select = document.getElementById('weekSelect');
+  select.innerHTML = weekIndex.map((w, i) => `<option value="${w.file}" ${i === 0 ? 'selected' : ''}>${w.label}</option>`).join('');
+
+  select.addEventListener('change', () => {
+    if (select.value) loadWeek(select.value);
+  });
+
+  if (weekIndex.length > 0) {
+    loadWeek(weekIndex[0].file);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
