@@ -1333,6 +1333,24 @@ const EMBEDDED_DATA = {
     { "title": "灾害类", "desc": "以安全科普、应急功能介绍为主，不消费灾难本身。避免使用灾难现场血腥/恐怖画面。" }
   ]
 }
+,
+  "2026-06-15": {
+    "date": "2026-06-15",
+    "source": "实地抓取三平台热榜（2026-06-15）",
+    "top3": [
+      {"title":"测试选题1","hotspot":"抖音测试热点","difficulty":"低","stars":5},
+      {"title":"测试选题2","hotspot":"B站测试热点","difficulty":"中","stars":4},
+      {"title":"测试选题3","hotspot":"小红书测试热点","difficulty":"低","stars":5}
+    ],
+    "platforms": {
+      "douyin": {"name":"抖音","count":1,"categories":[{"title":"测试角度","topics":[{"hotspot":"测试热点","heat":"100万","source":"抖音热榜","idea":"测试idea","desc":"测试描述","formula":"测试公式","keyword":"测试"}]}]},
+      "bilibili": {"name":"B站","count":1,"categories":[{"title":"测试角度","topics":[{"hotspot":"测试热点","heat":"第1名","source":"B站排行榜","idea":"测试idea","desc":"测试描述","formula":"测试公式","keyword":"测试"}]}]},
+      "xiaohongshu": {"name":"小红书","count":1,"categories":[{"title":"测试角度","topics":[{"hotspot":"测试热点","heat":"1000赞","source":"小红书发现页","idea":"测试idea","desc":"测试描述","formula":"测试公式","keyword":"测试"}]}]}
+    },
+    "risks": [
+      {"title":"测试风险","desc":"测试风险描述"}
+    ]
+  }
   // MARKER:EMBEDDED_DATA_INSERT
 };
 
@@ -1426,12 +1444,19 @@ const HOTLIST_DATA = {
       {"title":"喜茶今年最好喝的一杯出现了","heat":"268赞"}
     ]
   }
+,
+  "2026-06-15": {
+    "douyin": [{"title":"测试热点1","heat":"100万"}],
+    "bilibili": [{"title":"测试热点2","heat":"第1名"}],
+    "xiaohongshu": [{"title":"测试热点3","heat":"1000赞"}]
+  }
   // MARKER:HOTLIST_DATA_INSERT
 };
 
 // === 每周更新时，在 weekIndex 数组最前面追加新一周的条目即可 ===
 // === 同时在上面的 EMBEDDED_DATA 中追加对应日期的数据对象 ===
 const weekIndex = [
+  { date: "2026-06-15", label: "2026-06-15（第25周）", file: "2026-06-15" },
   // MARKER:WEEKINDEX_INSERT
   { date: "2026-06-08", label: "2026-06-08（第24周）", file: "2026-06-08" },
   { date: "2026-06-02", label: "2026-06-02（第23周）", file: "2026-06-02" }
