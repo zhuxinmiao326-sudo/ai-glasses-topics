@@ -84,6 +84,10 @@ header p { color: #666; font-size: 14px; }
 </div>
 
 <script>
+window.onerror = function(msg, url, line, col, error) {
+  document.getElementById('content').innerHTML = '<div class="loading">JS Error: ' + msg + ' at line ' + line + ':' + col + '</div>';
+  return true;
+};
 const EMBEDDED_DATA = {
     "2026-06-02": {
   "date": "2026-06-02",
@@ -1792,11 +1796,12 @@ const weekIndex = [
 ].sort((a, b) => b.date.localeCompare(a.date)); // 自动按日期倒序，最新在前
 
 function getPlatformSearchURL(platform, keyword) {
-  const encoded = encodeURIComponent(keyword);
+  const encoded = encodeURIComponent(keyword || '');
   const urls = {
     douyin: `https://www.douyin.com/search/${encoded}`,
     bilibili: `https://search.bilibili.com/all?keyword=${encoded}`,
-    xiaohongshu: `https://www.xiaohongshu.com/search_result?keyword=${encoded}`
+    xiaohongshu: `https://www.xiaohongshu.com/search_result?keyword=${encoded}`,
+    cross: `https://www.baidu.com/s?wd=${encoded}`
   };
   return urls[platform] || '#';
 }
@@ -1830,7 +1835,7 @@ function renderPlatform(key, platform, data) {
     <div class="topics-grid">
       ${cat.topics.map(topic => `
         <div class="topic-card">
-          <a class="card-link" href="${getPlatformSearchURL(key, topic.keyword)}" target="_blank" rel="noopener"></a>
+          <a class="card-link" href="${topic.link || getPlatformSearchURL(key, topic.title)}" target="_blank" rel="noopener"></a>
           <span class="link-hint">\u2197</span>
           <div>
             <span class="hotspot-tag">${topic.hotspot}</span>
@@ -1858,7 +1863,7 @@ function renderRisks(risks) {
 }
 
 function renderHotlist(platforms, weekDate) {
-  const platformNames = { douyin: '抖音热榜', bilibili: 'B站排行榜', xiaohongshu: '小红书热点' };
+  const platformNames = { douyin: '抖音热榜', bilibili: 'B站排行榜', xiaohongshu: '小红书热点', cross: '跨平台热点' };
   const hotlistData = HOTLIST_DATA[weekDate] || {};
   const platformSections = Object.keys(platforms).map(key => {
     const items = hotlistData[key] || [];
