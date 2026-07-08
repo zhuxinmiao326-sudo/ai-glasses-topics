@@ -3733,12 +3733,6 @@ function generatePaper(bank) {
   const sc = shuffle(bank.filter(q => q.type === 'sc')).slice(0, CONFIG.sc.count);
   const mc = shuffle(bank.filter(q => q.type === 'mc')).slice(0, CONFIG.mc.count);
 
-  [sc, mc].forEach(list => {
-    list.forEach(q => {
-      q.options = shuffle(q.options);
-    });
-  });
-
   currentPaper = [
     ...tf.map((q, idx) => ({...q, section: 'tf', seq: idx + 1})),
     ...sc.map((q, idx) => ({...q, section: 'sc', seq: idx + 1})),
