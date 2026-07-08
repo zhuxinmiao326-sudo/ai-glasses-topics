@@ -374,9 +374,10 @@
     <div class="card">
       <h2 class="section-title">考试记录管理</h2>
       <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
-        记录跨标签页实时同步；刷新页面后会清空，可导出 / 导入 JSON 备份。
+        开启云端收集后，外部答题记录会自动汇总到此处；点击「刷新」可拉取最新数据。未开启云端时仍可通过导出 / 导入 JSON 备份。
       </p>
       <div class="manager-actions">
+        <button class="btn btn-secondary btn-sm" onclick="fetchRecordsFromBackend(); renderRecords();">刷新记录</button>
         <button class="btn btn-secondary btn-sm" onclick="exportRecordsCSV()">导出 CSV</button>
         <button class="btn btn-secondary btn-sm" onclick="exportRecordsJSON()">导出 JSON</button>
         <button class="btn btn-secondary btn-sm" onclick="document.getElementById('records-import-input').click()">导入 JSON</button>
@@ -3877,6 +3878,14 @@ const PASS_SCORE = 90;
 const EXAM_MINUTES = 60;
 const MANAGER_PASSWORD = 'admin';
 
+// 云端成绩收集配置（方案 B）
+// 部署 Cloudflare Worker 后，把 endpoint 和 adminToken 填到这里，enabled 设为 true
+const BACKEND_CONFIG = {
+  enabled: false,
+  endpoint: 'https://你的-worker-地址.workers.dev',
+  adminToken: '你的管理令牌'
+};
+
 let currentBank = [];
 let currentPaper = [];
 let currentProduct = '';
@@ -3937,6 +3946,45 @@ function broadcastRecords(appendOnly = false) {
     }
   } catch (e) {
     // ignore broadcast errors
+  }
+}
+
+async function submitToBackend(record) {
+  if (!BACKEND_CONFIG.enabled || !BACKEND_CONFIG.endpoint) return;
+  try {
+    await fetch(`${BACKEND_CONFIG.endpoint}/submit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(record)
+    });
+  } catch (e) {
+    // fail silently so the exam experience is not broken
+  }
+}
+
+async function fetchRecordsFromBackend() {
+  if (!BACKEND_CONFIG.enabled || !BACKEND_CONFIG.endpoint) return;
+  try {
+    const res = await fetch(`${BACKEND_CONFIG.endpoint}/records?token=${encodeURIComponent(BACKEND_CONFIG.adminToken)}`);
+    const data = await res.json();
+    if (data && Array.isArray(data.records)) {
+      mergeRecords(data.records);
+      renderRecords();
+    }
+  } catch (e) {
+    // ignore fetch errors
+  }
+}
+
+async function clearBackendRecords() {
+  if (!BACKEND_CONFIG.enabled || !BACKEND_CONFIG.endpoint) return false;
+  try {
+    const res = await fetch(`${BACKEND_CONFIG.endpoint}/records?token=${encodeURIComponent(BACKEND_CONFIG.adminToken)}`, {
+      method: 'DELETE'
+    });
+    return res.ok;
+  } catch (e) {
+    return false;
   }
 }
 
@@ -4149,7 +4197,7 @@ function submitExam(auto=false) {
   });
 
   const userName = document.getElementById('user-name').value.trim();
-  examRecords.push({
+  const record = {
     name: userName,
     product: currentProduct,
     score: total,
@@ -4158,8 +4206,10 @@ function submitExam(auto=false) {
     scCorrect,
     mcCorrect,
     timestamp: new Date().toLocaleString('zh-CN')
-  });
+  };
+  examRecords.push(record);
   broadcastRecords(true);
+  submitToBackend(record);
 
   document.getElementById('exam-screen').classList.add('hidden');
   document.getElementById('result-screen').classList.remove('hidden');
@@ -4217,7 +4267,7 @@ function submitManagerAuth() {
     return;
   }
   document.getElementById('manager-auth').classList.add('hidden');
-  renderRecords();
+  fetchRecordsFromBackend().then(renderRecords);
   document.getElementById('cover-screen').classList.add('hidden');
   document.getElementById('result-screen').classList.add('hidden');
   document.getElementById('exam-screen').classList.add('hidden');
@@ -4354,6 +4404,7 @@ function clearRecords() {
   if (examRecords.length === 0) return;
   showConfirmModal('确定清空所有考试记录吗？此操作不可恢复。', () => {
     examRecords = [];
+    clearBackendRecords();
     if (recordsChannel) {
       try {
         recordsChannel.postMessage({ type: 'clear' });
