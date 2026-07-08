@@ -1,0 +1,4367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>千问AI眼镜产品知识考试</title>
+<style>
+  :root {
+    --primary: #1677ff;
+    --primary-dark: #0958d9;
+    --success: #52c41a;
+    --danger: #ff4d4f;
+    --warning: #faad14;
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --text: #1f2937;
+    --text-secondary: #6b7280;
+    --border: #e5e7eb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+  header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #fff;
+    padding: 32px 24px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(22,119,255,0.2);
+  }
+  header h1 { font-size: 24px; margin-bottom: 8px; }
+  header p { opacity: 0.9; font-size: 14px; }
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border: 1px solid var(--border);
+  }
+  .intro {
+    background: #fffbe6;
+    border: 1px solid #ffe58f;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #614700;
+  }
+  .intro strong { color: #d48806; }
+  .form-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+  .form-row label { display: flex; flex-direction: column; flex: 1; min-width: 200px; font-size: 14px; color: var(--text-secondary); }
+  .form-row input {
+    margin-top: 6px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 15px;
+  }
+  .form-row input:invalid { border-color: var(--danger); }
+  .btn {
+    display: inline-block;
+    padding: 14px 32px;
+    border: none;
+    border-radius: 8px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+  .btn:disabled { background: #bfbfbf; cursor: not-allowed; transform: none; }
+  .btn-secondary { background: #fff; color: var(--primary); border: 1px solid var(--primary); }
+  .btn-secondary:hover { background: #f0f7ff; }
+  .btn-danger { background: #fff; color: var(--danger); border: 1px solid var(--danger); }
+  .btn-danger:hover { background: #fff1f0; }
+  .btn-sm { padding: 8px 16px; font-size: 14px; }
+  .exam-select {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  .exam-card {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .exam-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 16px rgba(22,119,255,0.12);
+  }
+  .exam-card h3 { font-size: 20px; margin-bottom: 8px; color: var(--primary); }
+  .exam-card p { font-size: 13px; color: var(--text-secondary); }
+  .timer {
+    position: sticky;
+    top: 12px;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card);
+    padding: 12px 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .timer span { font-weight: 600; }
+  .timer .time { font-size: 20px; color: var(--primary); }
+  .timer .time.warning { color: var(--warning); }
+  .timer .time.danger { color: var(--danger); }
+  .section-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 28px 0 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary);
+  }
+  .question {
+    margin-bottom: 22px;
+    padding: 18px;
+    border-radius: 10px;
+    background: #fafafa;
+    border: 1px solid var(--border);
+  }
+  .question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .question-number { font-weight: 600; color: var(--primary); margin-right: 8px; }
+  .question-stem { flex: 1; font-weight: 500; }
+  .question-score { color: var(--text-secondary); font-size: 13px; white-space: nowrap; margin-left: 12px; }
+  .options { display: flex; flex-direction: column; gap: 10px; margin-left: 24px; }
+  .option {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .option:hover { border-color: var(--primary); background: #f0f7ff; }
+  .option input { margin-right: 10px; cursor: pointer; }
+  .option.correct { border-color: var(--success); background: #f6ffed; }
+  .option.wrong { border-color: var(--danger); background: #fff1f0; }
+  .result-panel {
+    text-align: center;
+    padding: 32px;
+    background: linear-gradient(135deg, #e6f7ff, #f0f7ff);
+    border-radius: 16px;
+    margin-bottom: 24px;
+  }
+  .result-score { font-size: 48px; font-weight: 700; color: var(--primary); }
+  .result-pass { color: var(--success); font-size: 20px; font-weight: 600; margin-top: 8px; }
+  .result-fail { color: var(--danger); font-size: 20px; font-weight: 600; margin-top: 8px; }
+  .stats { display: flex; justify-content: center; gap: 32px; margin-top: 16px; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat-value { font-size: 24px; font-weight: 700; }
+  .stat-label { font-size: 13px; color: var(--text-secondary); }
+  .hidden { display: none !important; }
+  .answer-reveal { margin-top: 8px; font-size: 14px; color: var(--text-secondary); }
+  .error-box {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    background: #fff1f0;
+    border: 1px solid var(--danger);
+    border-radius: 8px;
+    padding: 16px 24px;
+    color: var(--danger);
+    font-weight: 500;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    text-align: center;
+    min-width: 280px;
+  }
+  .error-box.show { display: block; }
+  .name-error {
+    color: var(--danger);
+    font-size: 13px;
+    margin-top: 4px;
+    display: none;
+  }
+  .name-error.show { display: block; }
+  .manager-entry { text-align: right; margin-bottom: 12px; }
+  .records-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-top: 12px;
+  }
+  .records-table th,
+  .records-table td {
+    border: 1px solid var(--border);
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .records-table th { background: #f5f7fa; font-weight: 600; }
+  .records-table tr:nth-child(even) { background: #fafafa; }
+  .manager-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px 0 8px;
+  }
+  .manager-auth-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .manager-auth-box {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 28px 24px;
+    width: 90%;
+    max-width: 360px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    text-align: center;
+  }
+  .manager-auth-box h3 { margin-bottom: 16px; font-size: 18px; }
+  .manager-auth-box input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 15px;
+    margin-bottom: 16px;
+  }
+  .manager-auth-box .auth-error {
+    color: var(--danger);
+    font-size: 13px;
+    margin-bottom: 12px;
+    display: none;
+  }
+  .manager-auth-box .auth-error.show { display: block; }
+  .manager-auth-box .auth-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+  .confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .confirm-box {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 24px;
+    width: 90%;
+    max-width: 360px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    text-align: center;
+  }
+  .confirm-box p { margin-bottom: 20px; line-height: 1.5; }
+  .confirm-box .confirm-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+  .pass-yes { color: var(--success); font-weight: 600; }
+  .pass-no { color: var(--danger); font-weight: 600; }
+  @media (max-width: 640px) {
+    .exam-select { grid-template-columns: 1fr; }
+    .records-table { font-size: 12px; }
+    .records-table th,
+    .records-table td { padding: 6px 4px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>千问AI眼镜产品知识考试</h1>
+    <p>题目从对应产品题库中随机抽取，每次打开都会重新生成试卷</p>
+  </header>
+
+  <div id="cover-screen" class="card">
+    <div class="manager-entry">
+      <button class="btn btn-secondary btn-sm" onclick="openManager()">管理后台</button>
+    </div>
+    <div class="intro">
+      <strong>考试说明：</strong>
+      <ul style="margin: 8px 0 0 18px;">
+        <li>考试时间：60 分钟</li>
+        <li>判断题 20 题，每题 1 分，共 20 分</li>
+        <li>单选题 25 题，每题 2 分，共 50 分</li>
+        <li>多选题 10 题，每题 3 分，共 30 分</li>
+        <li>满分 100 分，90 分及格</li>
+      </ul>
+    </div>
+    <div class="form-row">
+      <label>姓名（必填）
+        <input type="text" id="user-name" placeholder="请输入姓名" required>
+      </label>
+      <div id="name-error" class="name-error">请先输入姓名再开始考试</div>
+    </div>
+    <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">请选择要参加的考试：</p>
+    <div class="exam-select">
+      <div class="exam-card" onclick="startExam('G1')">
+        <h3>千问 G1</h3>
+        <p>产品知识考试</p>
+      </div>
+      <div class="exam-card" onclick="startExam('S1')">
+        <h3>千问 S1</h3>
+        <p>产品知识考试</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="exam-screen" class="hidden">
+    <div class="timer">
+      <div><span id="exam-title" style="font-size: 15px; color: var(--text-secondary); margin-right: 12px;"></span><span id="timer-text" class="time">60:00</span></div>
+      <div><button class="btn" onclick="submitExam()">交卷</button></div>
+    </div>
+    <div id="error-box" class="error-box">您还未答完题，请答完题后交卷</div>
+    <div id="paper"></div>
+    <div style="text-align: center; margin-top: 24px;">
+      <button class="btn" onclick="submitExam()">交卷</button>
+    </div>
+  </div>
+
+  <div id="result-screen" class="hidden">
+    <div class="result-panel">
+      <div style="font-size: 16px; color: var(--text-secondary); margin-bottom: 4px;" id="result-title"></div>
+      <div class="result-score" id="score">0</div>
+      <div id="pass-status"></div>
+      <div class="stats">
+        <div class="stat"><div class="stat-value" id="stat-tf">0/20</div><div class="stat-label">判断题</div></div>
+        <div class="stat"><div class="stat-value" id="stat-sc">0/25</div><div class="stat-label">单选题</div></div>
+        <div class="stat"><div class="stat-value" id="stat-mc">0/10</div><div class="stat-label">多选题</div></div>
+      </div>
+    </div>
+    <div id="review"></div>
+    <div style="text-align: center; margin-top: 24px;">
+      <button class="btn" onclick="location.reload()">重新考试</button>
+      <button class="btn btn-secondary" style="margin-left: 12px;" onclick="openManager()">查看考试记录</button>
+    </div>
+  </div>
+
+  <div id="manager-screen" class="hidden">
+    <div class="card">
+      <h2 class="section-title">考试记录管理</h2>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+        记录跨标签页实时同步；刷新页面后会清空，可导出 / 导入 JSON 备份。
+      </p>
+      <div class="manager-actions">
+        <button class="btn btn-secondary btn-sm" onclick="exportRecordsCSV()">导出 CSV</button>
+        <button class="btn btn-secondary btn-sm" onclick="exportRecordsJSON()">导出 JSON</button>
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('records-import-input').click()">导入 JSON</button>
+        <input type="file" id="records-import-input" accept="application/json,.json" style="display:none" onchange="importRecordsJSON(this)">
+        <button class="btn btn-danger btn-sm" onclick="clearRecords()">清空记录</button>
+        <button class="btn btn-sm" onclick="closeManager()">返回首页</button>
+      </div>
+      <div id="records-table-wrap"></div>
+    </div>
+  </div>
+
+  <div id="manager-auth" class="hidden">
+    <div class="manager-auth-overlay">
+      <div class="manager-auth-box">
+        <h3>管理后台登录</h3>
+        <input type="password" id="manager-password-input" placeholder="请输入管理密码" onkeydown="if(event.key==='Enter')submitManagerAuth()">
+        <div id="manager-auth-error" class="auth-error">密码错误</div>
+        <div class="auth-actions">
+          <button class="btn btn-secondary btn-sm" onclick="cancelManagerAuth()">取消</button>
+          <button class="btn btn-sm" onclick="submitManagerAuth()">确定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirm-modal" class="hidden">
+    <div class="confirm-overlay">
+      <div class="confirm-box">
+        <p id="confirm-message">确定执行此操作吗？</p>
+        <div class="confirm-actions">
+          <button class="btn btn-secondary btn-sm" onclick="closeConfirmModal(false)">取消</button>
+          <button class="btn btn-danger btn-sm" onclick="closeConfirmModal(true)">确定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const BANK_G1 = [
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1采用高通骁龙AR1旗舰处理器与恒玄BES2800组成的双芯双系统架构。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的AI助手唤醒响应速度为600ms，显著优于行业平均水平。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1搭载3麦克风阵列，配合骨传导技术实现嘈杂环境下的精准收音。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1支持89种语言互译，并具备AI克隆同声传译功能。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的摄像头采用索尼IMX681传感器，像素为1200万，光圈为f/2.2，视角为109°超广角。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1从按下快门到成像需要1.5秒，视频录制仅支持1080P。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1采用行业首创的Super RAW超级夜景技术，并配备EIS电子防抖+云端AI算法的双重防抖方案。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1出厂即支持1080P视频录制不限时长，无需OTA升级。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的本地存储容量为32GB，是AI眼镜行业首个32GB配置。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的综合续航时间为5小时，电池容量为220mAh，不支持换电。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的MiniBag换电仓可额外提供2次满电续航。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1采用10mm粗镜腿设计，未配备任何状态指示灯。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的风尚眉框款与威灵顿框款均标配蔡司防蓝光平光镜片（升级清晖膜）。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的多彩镜片系列包含滑雪镜、驾驶镜、骑行镜和跑步镜共4个系列。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1支持\"前滑镜腿\"或\"点头\"完成小额免密的极速支付，默认限额为200元。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的防护等级为IPX4，支持安卓10.0+、iOS 14.4+及鸿蒙4系统。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1支持鸿蒙5及以上操作系统。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的\"拍题答疑\"功能接入了阿里最强学习大模型，覆盖K12到高等教育乃至成人教育全阶段。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的\"录音纪要\"功能仅支持3米近场收音，无法生成图文纪要。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的摄像头仅支持静态拍照，不支持视频录制。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1采用定制大振幅双音圈扬声器，支持三重音频模式切换，提供开放不入耳的定向音频体验。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的定向偶极子消音技术可有效降低通话漏音，提升通话隐私保护。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的\"贴心日程\"功能可以语音一句话创建和调整多个日程安排，并与手机日历实时同步。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的智能变色镜片提供灰色与棕色两种颜色可选，可随光线变化自动调节颜色深浅。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的\"书旗小说\"合作提供精选好书免费听服务。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的\"随身畅听\"仅深度合作了网易云音乐一个平台。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的\"同款比价\"功能联动京东平台，可帮助用户快速找到更优惠的价格。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的\"扫街探店\"功能与大众点评深度联动，提供店铺推荐与导航服务。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的\"拍题答疑\"功能仅支持小学阶段题目，无法覆盖初高中及大学内容。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "tf",
+    "stem": "千问AI眼镜G1的\"Live Talk实况对话\"支持长时多模态实时问答，用户可以边听边看、随问随答。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的核心定位是？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "运动相机"
+      },
+      {
+        "label": "B",
+        "text": "阿里巴巴千问AI助手智能眼镜"
+      },
+      {
+        "label": "C",
+        "text": "蓝牙耳机"
+      },
+      {
+        "label": "D",
+        "text": "普通太阳镜"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"三重行业首发\"是指？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "夜景、换电、大存储"
+      },
+      {
+        "label": "B",
+        "text": "3D显示、换电、大存储"
+      },
+      {
+        "label": "C",
+        "text": "夜景、3D显示、大存储"
+      },
+      {
+        "label": "D",
+        "text": "夜景、换电、AI助手"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"图文备忘\"功能最适合的使用场景是？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "记录停车位"
+      },
+      {
+        "label": "B",
+        "text": "观看电影"
+      },
+      {
+        "label": "C",
+        "text": "打游戏"
+      },
+      {
+        "label": "D",
+        "text": "视频会议"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"扫街探店\"功能深度联动了哪个应用？",
+    "answer": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "美团"
+      },
+      {
+        "label": "B",
+        "text": "大众点评"
+      },
+      {
+        "label": "C",
+        "text": "高德扫街榜"
+      },
+      {
+        "label": "D",
+        "text": "小红书"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"同款比价\"功能联动了哪个平台？",
+    "answer": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "京东"
+      },
+      {
+        "label": "B",
+        "text": "拼多多"
+      },
+      {
+        "label": "C",
+        "text": "淘宝"
+      },
+      {
+        "label": "D",
+        "text": "苏宁"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"沉浸直播\"功能支持以下哪种视角切换？",
+    "answer": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "仅眼镜视角"
+      },
+      {
+        "label": "B",
+        "text": "仅手机视角"
+      },
+      {
+        "label": "C",
+        "text": "手机/眼镜视角自由切换"
+      },
+      {
+        "label": "D",
+        "text": "无人机视角"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"拍题答疑\"功能，学生主要通过哪种交互方式把题目交给AI？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "第一视角拍照"
+      },
+      {
+        "label": "B",
+        "text": "手写输入"
+      },
+      {
+        "label": "C",
+        "text": "语音朗读"
+      },
+      {
+        "label": "D",
+        "text": "扫码"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"录音纪要2.0\"除了语音转写外，还能生成什么形式的纪要？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "图文会议纪要"
+      },
+      {
+        "label": "B",
+        "text": "仅音频文件"
+      },
+      {
+        "label": "C",
+        "text": "仅视频"
+      },
+      {
+        "label": "D",
+        "text": "手写笔记"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1支持一句话创建多日程、调整日程，主要体现了哪种能力？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "视觉识别"
+      },
+      {
+        "label": "B",
+        "text": "语音交互与复杂指令理解"
+      },
+      {
+        "label": "C",
+        "text": "运动监测"
+      },
+      {
+        "label": "D",
+        "text": "支付功能"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的多彩镜片系列中，\"防眩光、炫彩显高级\"的是？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "高尔夫镜"
+      },
+      {
+        "label": "B",
+        "text": "帆船镜"
+      },
+      {
+        "label": "C",
+        "text": "骑行镜"
+      },
+      {
+        "label": "D",
+        "text": "海钓镜"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的多彩镜片系列中，\"透水反光、锁鱼块\"的是？",
+    "answer": "D",
+    "options": [
+      {
+        "label": "A",
+        "text": "高尔夫镜"
+      },
+      {
+        "label": "B",
+        "text": "帆船镜"
+      },
+      {
+        "label": "C",
+        "text": "骑行镜"
+      },
+      {
+        "label": "D",
+        "text": "海钓镜"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的多彩镜片系列中，\"防风防紫外线、护眼更清晰\"的是？",
+    "answer": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "高尔夫镜"
+      },
+      {
+        "label": "B",
+        "text": "帆船镜"
+      },
+      {
+        "label": "C",
+        "text": "骑行镜"
+      },
+      {
+        "label": "D",
+        "text": "海钓镜"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"Live Talk实况对话\"功能主要支持哪种交互？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "仅语音问答"
+      },
+      {
+        "label": "B",
+        "text": "长时多模态实时问答，边听边看随问随答"
+      },
+      {
+        "label": "C",
+        "text": "仅拍照识别"
+      },
+      {
+        "label": "D",
+        "text": "仅文字输入"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1通过什么方式实现\"万物皆可拍可问\"？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "仅本地图像识别"
+      },
+      {
+        "label": "B",
+        "text": "千问最强模型+夸克百亿级图像检索增强"
+      },
+      {
+        "label": "C",
+        "text": "仅人工客服"
+      },
+      {
+        "label": "D",
+        "text": "仅二维码扫描"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"外卖闪购\"场景，\"上次喝的那个咖啡再来一杯\"直达哪个平台？",
+    "answer": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "美团外卖"
+      },
+      {
+        "label": "B",
+        "text": "饿了么"
+      },
+      {
+        "label": "C",
+        "text": "淘宝闪购"
+      },
+      {
+        "label": "D",
+        "text": "京东到家"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"行程提醒\"功能聚合了哪些服务？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "飞猪、阿里商旅、航班管家"
+      },
+      {
+        "label": "B",
+        "text": "携程、美团、滴滴"
+      },
+      {
+        "label": "C",
+        "text": "高德、百度、腾讯地图"
+      },
+      {
+        "label": "D",
+        "text": "支付宝、微信、银联"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"票务查询\"功能可直达哪个平台？",
+    "answer": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "猫眼"
+      },
+      {
+        "label": "B",
+        "text": "淘票票"
+      },
+      {
+        "label": "C",
+        "text": "大麦网"
+      },
+      {
+        "label": "D",
+        "text": "摩天轮"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"随身畅听\"深度合作了哪些音乐平台？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "QQ音乐和网易云音乐"
+      },
+      {
+        "label": "B",
+        "text": "酷狗音乐和酷我音乐"
+      },
+      {
+        "label": "C",
+        "text": "喜马拉雅和荔枝"
+      },
+      {
+        "label": "D",
+        "text": "虾米音乐和Spotify"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"书旗小说\"合作提供什么服务？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "付费电子书购买"
+      },
+      {
+        "label": "B",
+        "text": "精选好书免费听"
+      },
+      {
+        "label": "C",
+        "text": "在线写作"
+      },
+      {
+        "label": "D",
+        "text": "漫画阅读"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的智能变色镜片有哪两种颜色可选？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "黑色和白色"
+      },
+      {
+        "label": "B",
+        "text": "灰色和棕色"
+      },
+      {
+        "label": "C",
+        "text": "蓝色和绿色"
+      },
+      {
+        "label": "D",
+        "text": "红色和黄色"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"AI云台\"双重防抖主要适用于什么场景？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "静态拍照"
+      },
+      {
+        "label": "B",
+        "text": "跑步、骑行等动态场景"
+      },
+      {
+        "label": "C",
+        "text": "水下拍摄"
+      },
+      {
+        "label": "D",
+        "text": "夜间长曝光"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的隐私指示灯在什么场景下会自动亮起？",
+    "answer": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "听音乐时"
+      },
+      {
+        "label": "B",
+        "text": "通话时"
+      },
+      {
+        "label": "C",
+        "text": "拍摄时"
+      },
+      {
+        "label": "D",
+        "text": "充电时"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1相比行业竞品，目前暂未重点覆盖的是？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "阿里生态服务"
+      },
+      {
+        "label": "B",
+        "text": "车机及智能家居深度联动"
+      },
+      {
+        "label": "C",
+        "text": "翻译功能"
+      },
+      {
+        "label": "D",
+        "text": "夜景拍摄"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"贴心日程\"功能支持与哪个端实时同步？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "电脑日历"
+      },
+      {
+        "label": "B",
+        "text": "手机日历"
+      },
+      {
+        "label": "C",
+        "text": "智能手表"
+      },
+      {
+        "label": "D",
+        "text": "车载系统"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的目标用户画像中，以下哪个描述最准确？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "热爱用AI探索边界、用科技点亮日常的先锋探索者与生活分享家"
+      },
+      {
+        "label": "B",
+        "text": "仅面向商务人士"
+      },
+      {
+        "label": "C",
+        "text": "仅面向学生群体"
+      },
+      {
+        "label": "D",
+        "text": "仅面向老年人群"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"AI克隆同声传译\"最多支持多少种语言互译？",
+    "answer": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "50种"
+      },
+      {
+        "label": "B",
+        "text": "79种"
+      },
+      {
+        "label": "C",
+        "text": "89种"
+      },
+      {
+        "label": "D",
+        "text": "100种"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的本地存储容量是行业首个多少GB配置？",
+    "answer": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "32GB"
+      },
+      {
+        "label": "B",
+        "text": "48GB"
+      },
+      {
+        "label": "C",
+        "text": "64GB"
+      },
+      {
+        "label": "D",
+        "text": "128GB"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的综合续航时间为多少小时？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "7小时"
+      },
+      {
+        "label": "B",
+        "text": "9小时"
+      },
+      {
+        "label": "C",
+        "text": "12小时"
+      },
+      {
+        "label": "D",
+        "text": "15小时"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的电池容量为多少mAh？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "220mAh"
+      },
+      {
+        "label": "B",
+        "text": "272mAh"
+      },
+      {
+        "label": "C",
+        "text": "287mAh"
+      },
+      {
+        "label": "D",
+        "text": "300mAh"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的镜腿厚度为多少mm？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "6mm"
+      },
+      {
+        "label": "B",
+        "text": "8mm"
+      },
+      {
+        "label": "C",
+        "text": "9mm"
+      },
+      {
+        "label": "D",
+        "text": "10mm"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的摄像头传感器型号是什么？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "索尼IMX681"
+      },
+      {
+        "label": "B",
+        "text": "索尼IMX586"
+      },
+      {
+        "label": "C",
+        "text": "三星GN1"
+      },
+      {
+        "label": "D",
+        "text": "豪威OV48C"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1从按下快门到成像需要多少秒？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "0.6秒"
+      },
+      {
+        "label": "B",
+        "text": "0.8秒"
+      },
+      {
+        "label": "C",
+        "text": "1.0秒"
+      },
+      {
+        "label": "D",
+        "text": "1.2秒"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的AI助手唤醒响应速度为多少ms？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "250ms"
+      },
+      {
+        "label": "B",
+        "text": "350ms"
+      },
+      {
+        "label": "C",
+        "text": "450ms"
+      },
+      {
+        "label": "D",
+        "text": "500ms"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的防护等级是什么？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "IPX2"
+      },
+      {
+        "label": "B",
+        "text": "IPX4"
+      },
+      {
+        "label": "C",
+        "text": "IPX5"
+      },
+      {
+        "label": "D",
+        "text": "IPX7"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1支持的操作系统中，以下哪个是正确的？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "鸿蒙3"
+      },
+      {
+        "label": "B",
+        "text": "鸿蒙4"
+      },
+      {
+        "label": "C",
+        "text": "鸿蒙5"
+      },
+      {
+        "label": "D",
+        "text": "仅iOS"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"极速支付\"默认限额为多少元？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "100元"
+      },
+      {
+        "label": "B",
+        "text": "200元"
+      },
+      {
+        "label": "C",
+        "text": "500元"
+      },
+      {
+        "label": "D",
+        "text": "1000元"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"MiniBag换电仓\"可额外提供几次满电续航？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "1次"
+      },
+      {
+        "label": "B",
+        "text": "2次"
+      },
+      {
+        "label": "C",
+        "text": "3次"
+      },
+      {
+        "label": "D",
+        "text": "4次"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的\"录音纪要\"功能支持多远距离的远场收音？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "5米"
+      },
+      {
+        "label": "B",
+        "text": "10米"
+      },
+      {
+        "label": "C",
+        "text": "15米"
+      },
+      {
+        "label": "D",
+        "text": "20米"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1在目标用户地域分布上，首批优先覆盖哪些城市线级？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "一线及新一线城市的科技尝鲜人群"
+      },
+      {
+        "label": "B",
+        "text": "三四线城市及县级市场"
+      },
+      {
+        "label": "C",
+        "text": "海外新兴市场"
+      },
+      {
+        "label": "D",
+        "text": "下沉市场老年用户"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1的核心目标人群中，以下哪类用户对\"AI助手随时在线\"的需求最强烈？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "追求效率的商务与科技尝鲜人群"
+      },
+      {
+        "label": "B",
+        "text": "仅学生群体"
+      },
+      {
+        "label": "C",
+        "text": "仅老年人群"
+      },
+      {
+        "label": "D",
+        "text": "仅儿童群体"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1的七大核心价值支撑包括？",
+    "answer": "ABCDEFG",
+    "options": [
+      {
+        "label": "A",
+        "text": "回答聪明会主动办事的超级AI眼镜"
+      },
+      {
+        "label": "B",
+        "text": "第一视角AI拍摄神器"
+      },
+      {
+        "label": "C",
+        "text": "全天候舒适聆听"
+      },
+      {
+        "label": "D",
+        "text": "时尚百搭"
+      },
+      {
+        "label": "E",
+        "text": "可换电设计"
+      },
+      {
+        "label": "F",
+        "text": "双芯双系统"
+      },
+      {
+        "label": "G",
+        "text": "直觉操控"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1支持的翻译场景包括？",
+    "answer": "ABCD",
+    "options": [
+      {
+        "label": "A",
+        "text": "同声传译"
+      },
+      {
+        "label": "B",
+        "text": "面对面翻译"
+      },
+      {
+        "label": "C",
+        "text": "多人对话翻译"
+      },
+      {
+        "label": "D",
+        "text": "拍照翻译"
+      },
+      {
+        "label": "E",
+        "text": "离线翻译"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1的阿里生态服务联动包括？",
+    "answer": "ABCDE",
+    "options": [
+      {
+        "label": "A",
+        "text": "淘宝闪购"
+      },
+      {
+        "label": "B",
+        "text": "高德扫街榜"
+      },
+      {
+        "label": "C",
+        "text": "支付宝"
+      },
+      {
+        "label": "D",
+        "text": "飞猪"
+      },
+      {
+        "label": "E",
+        "text": "大麦"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1针对工作和学习的功能包括？",
+    "answer": "ABCD",
+    "options": [
+      {
+        "label": "A",
+        "text": "拍题答疑"
+      },
+      {
+        "label": "B",
+        "text": "录音纪要"
+      },
+      {
+        "label": "C",
+        "text": "图文备忘"
+      },
+      {
+        "label": "D",
+        "text": "贴心日程"
+      },
+      {
+        "label": "E",
+        "text": "沉浸直播"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1的音频体验特点包括？",
+    "answer": "ABCDE",
+    "options": [
+      {
+        "label": "A",
+        "text": "定制大振幅双音圈扬声器"
+      },
+      {
+        "label": "B",
+        "text": "三重音频模式"
+      },
+      {
+        "label": "C",
+        "text": "开放不入耳设计"
+      },
+      {
+        "label": "D",
+        "text": "定向偶极子消音技术"
+      },
+      {
+        "label": "E",
+        "text": "智能EQ随音量动态调校"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1的人群画像中，以下哪些是其核心目标人群标签？",
+    "answer": "ABCDE",
+    "options": [
+      {
+        "label": "A",
+        "text": "科技玩家/发烧友"
+      },
+      {
+        "label": "B",
+        "text": "生活分享家"
+      },
+      {
+        "label": "C",
+        "text": "商务效率人士"
+      },
+      {
+        "label": "D",
+        "text": "时尚达人"
+      },
+      {
+        "label": "E",
+        "text": "运动/户外爱好者"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1相比行业竞品的主要优势包括？",
+    "answer": "ABCDE",
+    "options": [
+      {
+        "label": "A",
+        "text": "千问最强模型原生深度整合"
+      },
+      {
+        "label": "B",
+        "text": "深度整合阿里生态"
+      },
+      {
+        "label": "C",
+        "text": "插拔式双电池换电"
+      },
+      {
+        "label": "D",
+        "text": "行业首创Super RAW暗光增强"
+      },
+      {
+        "label": "E",
+        "text": "64GB超大存储"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1的框型和镜片选择包括？",
+    "answer": "ABCDE",
+    "options": [
+      {
+        "label": "A",
+        "text": "风尚眉框"
+      },
+      {
+        "label": "B",
+        "text": "威灵顿框"
+      },
+      {
+        "label": "C",
+        "text": "蔡司防蓝光平光镜片"
+      },
+      {
+        "label": "D",
+        "text": "多彩镜片"
+      },
+      {
+        "label": "E",
+        "text": "智能变色镜片"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1\"回答聪明会主动办事\"体现在哪些方面？",
+    "answer": "ABCD",
+    "options": [
+      {
+        "label": "A",
+        "text": "复杂指令精准拆解"
+      },
+      {
+        "label": "B",
+        "text": "连续多轮问答与上下文记忆"
+      },
+      {
+        "label": "C",
+        "text": "一句话搞定生活大小事"
+      },
+      {
+        "label": "D",
+        "text": "350ms极速唤醒"
+      },
+      {
+        "label": "E",
+        "text": "只能回答简单问题"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1的\"沉浸直播\"功能特点包括？",
+    "answer": "ABCD",
+    "options": [
+      {
+        "label": "A",
+        "text": "眼镜第一视角轻松开播"
+      },
+      {
+        "label": "B",
+        "text": "手机/眼镜视角自由切换"
+      },
+      {
+        "label": "C",
+        "text": "实时防抖"
+      },
+      {
+        "label": "D",
+        "text": "动态场景清晰成像"
+      },
+      {
+        "label": "E",
+        "text": "仅支持手机端开播"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1的\"双芯双系统\"中，骁龙AR1与BES2800的分工包括？",
+    "answer": "ABD",
+    "options": [
+      {
+        "label": "A",
+        "text": "骁龙AR1负责视觉/AI计算"
+      },
+      {
+        "label": "B",
+        "text": "BES2800负责音频/低功耗处理"
+      },
+      {
+        "label": "C",
+        "text": "双芯同时负责显示驱动"
+      },
+      {
+        "label": "D",
+        "text": "双芯协同保障续航与性能"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1的摄像头影像能力包括？",
+    "answer": "ABCD",
+    "options": [
+      {
+        "label": "A",
+        "text": "1200万像素"
+      },
+      {
+        "label": "B",
+        "text": "f/2.2光圈"
+      },
+      {
+        "label": "C",
+        "text": "109°超广角"
+      },
+      {
+        "label": "D",
+        "text": "0.6秒快拍"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1的音频隐私与体验设计包括？",
+    "answer": "ABCD",
+    "options": [
+      {
+        "label": "A",
+        "text": "定向偶极子消音技术"
+      },
+      {
+        "label": "B",
+        "text": "开放不入耳设计"
+      },
+      {
+        "label": "C",
+        "text": "智能EQ随音量动态调校"
+      },
+      {
+        "label": "D",
+        "text": "三重音频模式"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1支持的操控方式包括？",
+    "answer": "ABCD",
+    "options": [
+      {
+        "label": "A",
+        "text": "语音唤醒"
+      },
+      {
+        "label": "B",
+        "text": "多指长按"
+      },
+      {
+        "label": "C",
+        "text": "前滑镜腿"
+      },
+      {
+        "label": "D",
+        "text": "点头"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1的\"主动服务\"体现在哪些方面？",
+    "answer": "ABC",
+    "options": [
+      {
+        "label": "A",
+        "text": "复杂指令精准拆解"
+      },
+      {
+        "label": "B",
+        "text": "一句话创建日程"
+      },
+      {
+        "label": "C",
+        "text": "上下文记忆"
+      },
+      {
+        "label": "D",
+        "text": "只能回答固定问题"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1的指示灯设计包括？",
+    "answer": "AB",
+    "options": [
+      {
+        "label": "A",
+        "text": "隐私指示灯"
+      },
+      {
+        "label": "B",
+        "text": "状态指示灯"
+      },
+      {
+        "label": "C",
+        "text": "充电指示灯"
+      },
+      {
+        "label": "D",
+        "text": "蓝牙指示灯"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1的电池与续航方案包括？",
+    "answer": "ABCD",
+    "options": [
+      {
+        "label": "A",
+        "text": "272mAh电池"
+      },
+      {
+        "label": "B",
+        "text": "9小时综合续航"
+      },
+      {
+        "label": "C",
+        "text": "右镜腿热插拔换电"
+      },
+      {
+        "label": "D",
+        "text": "MiniBag换电仓"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1的\"AI拍摄\"优势包括？",
+    "answer": "ABCD",
+    "options": [
+      {
+        "label": "A",
+        "text": "第一视角拍摄"
+      },
+      {
+        "label": "B",
+        "text": "Super RAW夜景增强"
+      },
+      {
+        "label": "C",
+        "text": "EIS+云端AI双防抖"
+      },
+      {
+        "label": "D",
+        "text": "3K视频直出"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1的生态服务联动涵盖哪些领域？",
+    "answer": "ABCD",
+    "options": [
+      {
+        "label": "A",
+        "text": "出行"
+      },
+      {
+        "label": "B",
+        "text": "购物"
+      },
+      {
+        "label": "C",
+        "text": "餐饮"
+      },
+      {
+        "label": "D",
+        "text": "娱乐"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1相比普通眼镜/耳机类产品的差异化价值包括？",
+    "answer": "ABCD",
+    "options": [
+      {
+        "label": "A",
+        "text": "第一视角AI拍摄"
+      },
+      {
+        "label": "B",
+        "text": "AI助手随时在线"
+      },
+      {
+        "label": "C",
+        "text": "开放聆听"
+      },
+      {
+        "label": "D",
+        "text": "换电续航设计"
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "mc",
+    "stem": "千问AI眼镜G1的AI双重防抖由哪两种防抖技术组成？",
+    "answer": "BC",
+    "options": [
+      {
+        "label": "A",
+        "text": "OIS光学防抖"
+      },
+      {
+        "label": "B",
+        "text": "EIS电子防抖"
+      },
+      {
+        "label": "C",
+        "text": "云端AI算法防抖"
+      },
+      {
+        "label": "D",
+        "text": "传感器位移防抖"
+      }
+    ]
+  }
+];
+const BANK_S1 = [
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1采用双光机双显方案，是行业首款具备空间3D显示能力的AI眼镜。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的入眼峰值亮度为4000nits，约为友商平均水平的两倍多。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1采用6度最佳视仰角设计，显示位置远近高低可调。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的综合续航时间为7小时，电池容量为287mAh（245+42）。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1支持右镜腿热插拔换电，可实现1秒换电且不断电。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的镜腿厚度为7.5mm，采用1:1均衡配重与10°外张角设计。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1有威灵顿框和波士顿框两种经典框型可选。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的镜片采用专业光学级平凹镜片一体化贴合设计，将度数与显示融合。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的近眼导航联合高德深度定制，支持地磁随头转和快捷投射上镜。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1支持AR截/录屏，可同时将眼前真实环境和眼镜显示内容保存。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的主动服务AI助理可在用户运动时自动担任私人教练，工作时提供疲劳预警与久坐提醒。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1支持AI克隆同声传译，翻译时以说话人的语调、节奏与情感进行播报。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的AI助手唤醒响应速度为350ms，并支持连续多轮问答。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的充电盒可为眼镜提供6次完整充电，换电仓可为镜腿电池充电3次。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的存储方案主要依赖夸克网盘云端备份，而非本地大容量存储。",
+    "answer": "√",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1搭载3麦克风阵列，配合骨传导技术实现嘈杂环境下的精准收音。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1仅搭载恒玄BES2800单芯片，未采用高通骁龙AR1。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的近眼导航功能仅与百度地图合作，未与高德地图进行深度定制。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1采用单光机+普通LCD屏幕方案，强光下显示效果较弱。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的主动服务AI助理需要摄像头持续拍摄用户面部，才能识别久坐与疲劳状态。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的AI克隆同声传译目前支持中、英、日三种语言。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的\"3D引导上车点\"功能主要服务于淘宝闪购的取货点引导。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的主动服务AI助理在用户开始跑步时会自动切换为勿扰模式，暂停音乐与通知推送。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的\"智能提词\"功能仅支持纯文本导入，无法直接读取常见的Word或PDF格式文档。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的镜腿材质未做亲肤处理，官方建议单次连续佩戴不超过2小时。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的\"AR截/录屏\"功能仅保存眼镜系统画面，无法记录真实环境。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的\"3D桌面\"是某个单独APP内的功能，未写入系统级UI规范。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的显示模组采用普通LCD屏幕，入眼峰值亮度仅为500nits。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的近眼导航仅支持文字提示，不支持语音交互。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "tf",
+    "stem": "千问AI眼镜S1的存储方案标配128GB本地大存储，无需依赖夸克网盘。",
+    "answer": "×",
+    "options": []
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的产品定位是？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "普通蓝牙耳机眼镜"
+      },
+      {
+        "label": "B",
+        "text": "自研双光机双显旗舰AI眼镜"
+      },
+      {
+        "label": "C",
+        "text": "运动相机"
+      },
+      {
+        "label": "D",
+        "text": "普通近视眼镜"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1本次重点传播的三大卖点不包括？",
+    "answer": "D",
+    "options": [
+      {
+        "label": "A",
+        "text": "空间3D显示"
+      },
+      {
+        "label": "B",
+        "text": "主动服务AI助理"
+      },
+      {
+        "label": "C",
+        "text": "AI克隆同声传译"
+      },
+      {
+        "label": "D",
+        "text": "64GB本地大存储"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"空间3D显示\"主要解决的行业痛点是？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "屏幕太小"
+      },
+      {
+        "label": "B",
+        "text": "二维信息\"膏药感\"，与现实世界深度脱节"
+      },
+      {
+        "label": "C",
+        "text": "颜色不够鲜艳"
+      },
+      {
+        "label": "D",
+        "text": "耗电量太高"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "AI克隆同声传译目前支持哪几种语言AI克隆？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "中、英、日"
+      },
+      {
+        "label": "B",
+        "text": "中、英、韩"
+      },
+      {
+        "label": "C",
+        "text": "中、英、法"
+      },
+      {
+        "label": "D",
+        "text": "中、英、西"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"主动服务AI助理\"在感知用户从静止到运动后，可能自动触发什么？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "静音模式"
+      },
+      {
+        "label": "B",
+        "text": "运动音乐+后台记录"
+      },
+      {
+        "label": "C",
+        "text": "关机"
+      },
+      {
+        "label": "D",
+        "text": "拍照"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"主动服务AI助理\"要实现状态感知，主要依靠眼镜内置的哪种传感器？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "GPS定位"
+      },
+      {
+        "label": "B",
+        "text": "IMU（惯性测量单元）"
+      },
+      {
+        "label": "C",
+        "text": "心率传感器"
+      },
+      {
+        "label": "D",
+        "text": "血氧传感器"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的近眼导航联合高德深度定制，主要优势是什么？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "仅提供文字导航"
+      },
+      {
+        "label": "B",
+        "text": "全场景语音交互+地磁随头转+快捷投射上镜"
+      },
+      {
+        "label": "C",
+        "text": "仅支持步行导航"
+      },
+      {
+        "label": "D",
+        "text": "仅显示地图"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1支持以下哪种打车服务？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "滴滴打车"
+      },
+      {
+        "label": "B",
+        "text": "高德打车"
+      },
+      {
+        "label": "C",
+        "text": "美团打车"
+      },
+      {
+        "label": "D",
+        "text": "曹操出行"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"AR截/录屏\"功能最适合用于？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "保存虚实融合画面并分享"
+      },
+      {
+        "label": "B",
+        "text": "仅录制眼镜系统画面"
+      },
+      {
+        "label": "C",
+        "text": "仅拍照真实环境"
+      },
+      {
+        "label": "D",
+        "text": "删除文件"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"AI克隆同声传译\"相比传统翻译的核心差异是？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "翻译速度更快"
+      },
+      {
+        "label": "B",
+        "text": "翻译时以说话人的语音和语调同声传译"
+      },
+      {
+        "label": "C",
+        "text": "支持更多语种"
+      },
+      {
+        "label": "D",
+        "text": "仅支持离线使用"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"图文备忘\"功能记录信息时，会同时保存什么？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "仅文字"
+      },
+      {
+        "label": "B",
+        "text": "照片+语音备注"
+      },
+      {
+        "label": "C",
+        "text": "仅视频"
+      },
+      {
+        "label": "D",
+        "text": "仅位置"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"智能提词\"功能适合演讲/播报场景，是因为它把提词内容放在哪里？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "手机屏幕"
+      },
+      {
+        "label": "B",
+        "text": "眼前的AR空间中"
+      },
+      {
+        "label": "C",
+        "text": "仅能语音播报"
+      },
+      {
+        "label": "D",
+        "text": "纸质手稿"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1相比G1最显著的产品形态差异是？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "更长的续航"
+      },
+      {
+        "label": "B",
+        "text": "具备空间3D显示能力"
+      },
+      {
+        "label": "C",
+        "text": "更粗的镜腿"
+      },
+      {
+        "label": "D",
+        "text": "更大的本地存储"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的一体化贴合镜片设计，主要解决了什么问题？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "厚重感、眩晕感、夹缝藏污纳垢"
+      },
+      {
+        "label": "B",
+        "text": "颜色单一"
+      },
+      {
+        "label": "C",
+        "text": "价格过高"
+      },
+      {
+        "label": "D",
+        "text": "无法配度数"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"主动服务\"理念中，\"感知在前，响应在后\"意味着？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "必须先说唤醒词"
+      },
+      {
+        "label": "B",
+        "text": "眼镜感知状态变化后主动提供服务"
+      },
+      {
+        "label": "C",
+        "text": "仅支持手动操作"
+      },
+      {
+        "label": "D",
+        "text": "仅支持语音命令"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"音乐雷达随心播放\"功能，能够根据用户状态主动推荐音乐，这体现了主动服务AI助理的哪项核心能力？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "状态感知+主动推荐"
+      },
+      {
+        "label": "B",
+        "text": "仅被动播放"
+      },
+      {
+        "label": "C",
+        "text": "仅手动选歌"
+      },
+      {
+        "label": "D",
+        "text": "仅随机播放"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1支持以下哪种生态服务？",
+    "answer": "D",
+    "options": [
+      {
+        "label": "A",
+        "text": "淘宝闪购"
+      },
+      {
+        "label": "B",
+        "text": "高德打车"
+      },
+      {
+        "label": "C",
+        "text": "支付宝支付"
+      },
+      {
+        "label": "D",
+        "text": "以上都是"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"主动服务AI助理\"在感知用户状态后主动服务，这一能力对用户的最大价值是什么？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "减少唤醒词操作，服务更自然"
+      },
+      {
+        "label": "B",
+        "text": "增加操作步骤"
+      },
+      {
+        "label": "C",
+        "text": "降低续航"
+      },
+      {
+        "label": "D",
+        "text": "增加重量"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1提供威灵顿框和波士顿框两种框型，这两种框型属于什么风格？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "运动风"
+      },
+      {
+        "label": "B",
+        "text": "经典复古风"
+      },
+      {
+        "label": "C",
+        "text": "童趣风"
+      },
+      {
+        "label": "D",
+        "text": "未来科技感"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"轨迹即刻成\"主要出现在哪种运动场景中？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "游泳"
+      },
+      {
+        "label": "B",
+        "text": "跑步/骑行"
+      },
+      {
+        "label": "C",
+        "text": "瑜伽"
+      },
+      {
+        "label": "D",
+        "text": "篮球"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"空间3D显示\"将3D显示写进了哪个层级？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "某个单独APP"
+      },
+      {
+        "label": "B",
+        "text": "系统级UI规范"
+      },
+      {
+        "label": "C",
+        "text": "仅在游戏内"
+      },
+      {
+        "label": "D",
+        "text": "仅在视频播放时"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"主动服务\"强调在什么节点主动出现？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "随机出现"
+      },
+      {
+        "label": "B",
+        "text": "用户切换状态的节点或达成特定条件的瞬间"
+      },
+      {
+        "label": "C",
+        "text": "每小时固定出现"
+      },
+      {
+        "label": "D",
+        "text": "仅在用户长按镜腿时"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"3D引导上车点\"利用空间3D显示能力，主要服务于哪个生态应用？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "高德打车"
+      },
+      {
+        "label": "B",
+        "text": "淘宝闪购"
+      },
+      {
+        "label": "C",
+        "text": "支付宝支付"
+      },
+      {
+        "label": "D",
+        "text": "飞猪机票"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"镜片一体化贴合\"设计，相比磁吸/夹片方案的主要优势不包括？",
+    "answer": "D",
+    "options": [
+      {
+        "label": "A",
+        "text": "更轻薄"
+      },
+      {
+        "label": "B",
+        "text": "减少视觉畸变与反光"
+      },
+      {
+        "label": "C",
+        "text": "维护清洁更省心"
+      },
+      {
+        "label": "D",
+        "text": "可以随意拆卸镜片"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的目标用户中，以下哪类人群最看重空间3D显示与主动服务AI能力？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "仅追求低价的人群"
+      },
+      {
+        "label": "B",
+        "text": "科技尝鲜与效率提升人群"
+      },
+      {
+        "label": "C",
+        "text": "仅追求传统眼镜外观的人群"
+      },
+      {
+        "label": "D",
+        "text": "不使用智能手机的人群"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的入眼峰值亮度是多少nits？",
+    "answer": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "2000nits"
+      },
+      {
+        "label": "B",
+        "text": "3000nits"
+      },
+      {
+        "label": "C",
+        "text": "4000nits"
+      },
+      {
+        "label": "D",
+        "text": "5000nits"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"AR截/录屏\"保存的虚实融合画面，最常被用户用于？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "法律取证"
+      },
+      {
+        "label": "B",
+        "text": "记录并分享第一视角AR体验"
+      },
+      {
+        "label": "C",
+        "text": "医学影像诊断"
+      },
+      {
+        "label": "D",
+        "text": "工业质量检测"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1采用双光机双显方案，相比单光机方案主要带来哪项显示提升？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "更高的屏幕刷新率"
+      },
+      {
+        "label": "B",
+        "text": "空间3D显示与真实景深层次感"
+      },
+      {
+        "label": "C",
+        "text": "更长的整机续航"
+      },
+      {
+        "label": "D",
+        "text": "更低的硬件成本"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的综合续航时间为多少小时？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "5小时"
+      },
+      {
+        "label": "B",
+        "text": "7小时"
+      },
+      {
+        "label": "C",
+        "text": "9小时"
+      },
+      {
+        "label": "D",
+        "text": "12小时"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"音乐雷达随心播放\"要实现状态识别，主要依赖眼镜内置的？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "GPS定位模块"
+      },
+      {
+        "label": "B",
+        "text": "IMU惯性测量单元"
+      },
+      {
+        "label": "C",
+        "text": "心率传感器"
+      },
+      {
+        "label": "D",
+        "text": "环境温度传感器"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"轨迹即刻成\"功能在运动结束后自动生成轨迹内容，主要体现了哪项能力？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "心率健康监测"
+      },
+      {
+        "label": "B",
+        "text": "第一视角记录+运动数据可视化"
+      },
+      {
+        "label": "C",
+        "text": "同声传译"
+      },
+      {
+        "label": "D",
+        "text": "语音日程管理"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1同时配备充电盒与换电仓，这种双续航方案的设计意图是？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "仅用于收纳保护眼镜"
+      },
+      {
+        "label": "B",
+        "text": "兼顾外出便携补电与快速不断电换电"
+      },
+      {
+        "label": "C",
+        "text": "完全替代有线充电"
+      },
+      {
+        "label": "D",
+        "text": "增加产品包装体积"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的换电仓可为镜腿电池充电几次？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "1次"
+      },
+      {
+        "label": "B",
+        "text": "3次"
+      },
+      {
+        "label": "C",
+        "text": "5次"
+      },
+      {
+        "label": "D",
+        "text": "7次"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的一体化贴合镜片设计，核心解决了传统AR眼镜夹片方案的哪个痛点？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "镜片颜色选择少"
+      },
+      {
+        "label": "B",
+        "text": "空气层造成的眩光、畸变与藏污纳垢"
+      },
+      {
+        "label": "C",
+        "text": "镜片容易丢失"
+      },
+      {
+        "label": "D",
+        "text": "无法搭配普通近视眼镜"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"3D桌面\"将3D显示写入系统级UI规范，这意味着空间3D显示已覆盖到？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "单一APP内部"
+      },
+      {
+        "label": "B",
+        "text": "系统主界面及多场景信息呈现"
+      },
+      {
+        "label": "C",
+        "text": "仅视频播放场景"
+      },
+      {
+        "label": "D",
+        "text": "仅游戏画面"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"轨迹即刻成\"功能可以帮助用户记录什么？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "心率变化"
+      },
+      {
+        "label": "B",
+        "text": "运动轨迹"
+      },
+      {
+        "label": "C",
+        "text": "睡眠数据"
+      },
+      {
+        "label": "D",
+        "text": "卡路里消耗"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的主动服务AI助理在感知用户从办公状态切换为运动状态时，最可能主动提供的服务组合是？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "久坐提醒+眼保健操"
+      },
+      {
+        "label": "B",
+        "text": "运动音乐+轨迹记录"
+      },
+      {
+        "label": "C",
+        "text": "静音模式+勿扰"
+      },
+      {
+        "label": "D",
+        "text": "自动关机+锁屏"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的电池设计有什么特点？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "单块大电池"
+      },
+      {
+        "label": "B",
+        "text": "主副双电池"
+      },
+      {
+        "label": "C",
+        "text": "外接充电宝"
+      },
+      {
+        "label": "D",
+        "text": "太阳能充电"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"音乐雷达随心播放\"可以根据什么推荐音乐？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "当前时间"
+      },
+      {
+        "label": "B",
+        "text": "用户状态"
+      },
+      {
+        "label": "C",
+        "text": "随机选择"
+      },
+      {
+        "label": "D",
+        "text": "地理位置"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的\"AR截/录屏\"功能保存的内容格式本质是什么？",
+    "answer": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "仅真实环境画面"
+      },
+      {
+        "label": "B",
+        "text": "仅眼镜系统画面"
+      },
+      {
+        "label": "C",
+        "text": "虚实融合画面"
+      },
+      {
+        "label": "D",
+        "text": "纯音频文件"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1的目标用户地域分布上，首批优先聚焦哪些城市线级？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "三四线城市及县级市场"
+      },
+      {
+        "label": "B",
+        "text": "一线及新一线城市的科技尝鲜人群"
+      },
+      {
+        "label": "C",
+        "text": "海外新兴市场"
+      },
+      {
+        "label": "D",
+        "text": "下沉市场老年用户"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "sc",
+    "stem": "千问AI眼镜S1相比G1更强调空间3D显示与主动服务，其核心目标人群更偏向？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "对前沿显示和效率体验有更高要求的科技尝鲜者"
+      },
+      {
+        "label": "B",
+        "text": "仅价格敏感用户"
+      },
+      {
+        "label": "C",
+        "text": "仅传统眼镜外观偏好者"
+      },
+      {
+        "label": "D",
+        "text": "仅职业运动员"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1本次重点传播的三大卖点包括？",
+    "answer": "ABC",
+    "options": [
+      {
+        "label": "A",
+        "text": "空间3D显示"
+      },
+      {
+        "label": "B",
+        "text": "主动服务AI助理"
+      },
+      {
+        "label": "C",
+        "text": "AI克隆同声传译"
+      },
+      {
+        "label": "D",
+        "text": "64GB本地大存储"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1的\"主动服务AI助理\"在不同状态下扮演的角色包括？",
+    "answer": "ABC",
+    "options": [
+      {
+        "label": "A",
+        "text": "运动时：私人教练"
+      },
+      {
+        "label": "B",
+        "text": "工作时：健康管家"
+      },
+      {
+        "label": "C",
+        "text": "娱乐时：活力伙伴"
+      },
+      {
+        "label": "D",
+        "text": "睡眠时：催眠师"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1支持的阿里生态服务包括？",
+    "answer": "ABCDE",
+    "options": [
+      {
+        "label": "A",
+        "text": "高德近眼导航"
+      },
+      {
+        "label": "B",
+        "text": "淘宝闪购"
+      },
+      {
+        "label": "C",
+        "text": "支付宝支付"
+      },
+      {
+        "label": "D",
+        "text": "飞猪行程查询"
+      },
+      {
+        "label": "E",
+        "text": "大麦票务"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1的工作学习功能包括？",
+    "answer": "ABCD",
+    "options": [
+      {
+        "label": "A",
+        "text": "拍题答疑"
+      },
+      {
+        "label": "B",
+        "text": "录音纪要"
+      },
+      {
+        "label": "C",
+        "text": "图文备忘"
+      },
+      {
+        "label": "D",
+        "text": "智能提词"
+      },
+      {
+        "label": "E",
+        "text": "沉浸直播"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1相比G1的优势/差异包括？",
+    "answer": "ABCD",
+    "options": [
+      {
+        "label": "A",
+        "text": "空间3D显示"
+      },
+      {
+        "label": "B",
+        "text": "主动服务AI助理"
+      },
+      {
+        "label": "C",
+        "text": "双光机显示"
+      },
+      {
+        "label": "D",
+        "text": "更细的7.5mm镜腿"
+      },
+      {
+        "label": "E",
+        "text": "64GB本地存储"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1的\"空间3D显示\"价值包括？",
+    "answer": "ABC",
+    "options": [
+      {
+        "label": "A",
+        "text": "信息拥有纵深、层次和距离感"
+      },
+      {
+        "label": "B",
+        "text": "被写进系统级UI规范"
+      },
+      {
+        "label": "C",
+        "text": "大脑处理速度更快"
+      },
+      {
+        "label": "D",
+        "text": "与现实世界深度脱节"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1的佩戴舒适性特点包括？",
+    "answer": "ABCDE",
+    "options": [
+      {
+        "label": "A",
+        "text": "7.5mm极细弹性镜腿"
+      },
+      {
+        "label": "B",
+        "text": "1:1均衡配重"
+      },
+      {
+        "label": "C",
+        "text": "10°外张角"
+      },
+      {
+        "label": "D",
+        "text": "天鹅颈可调支架"
+      },
+      {
+        "label": "E",
+        "text": "SGS生物安全认证材质"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1的AI能力特点包括？",
+    "answer": "ABCDE",
+    "options": [
+      {
+        "label": "A",
+        "text": "350ms极速唤醒"
+      },
+      {
+        "label": "B",
+        "text": "连续多轮问答"
+      },
+      {
+        "label": "C",
+        "text": "89种语言互译"
+      },
+      {
+        "label": "D",
+        "text": "AI克隆同声传译"
+      },
+      {
+        "label": "E",
+        "text": "Live Talk实况对话"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1的空间3D显示可应用于哪些场景？",
+    "answer": "ABCD",
+    "options": [
+      {
+        "label": "A",
+        "text": "3D桌面"
+      },
+      {
+        "label": "B",
+        "text": "消息通知"
+      },
+      {
+        "label": "C",
+        "text": "导航引导"
+      },
+      {
+        "label": "D",
+        "text": "提词"
+      },
+      {
+        "label": "E",
+        "text": "视频播放"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1的\"主动服务\"触发条件包括？",
+    "answer": "ABCD",
+    "options": [
+      {
+        "label": "A",
+        "text": "用户戴上眼镜的时段"
+      },
+      {
+        "label": "B",
+        "text": "IMU捕捉到用户正在跑步"
+      },
+      {
+        "label": "C",
+        "text": "从室内到室外的状态切换"
+      },
+      {
+        "label": "D",
+        "text": "从休息到工作的状态切换"
+      },
+      {
+        "label": "E",
+        "text": "每小时强制推送"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1的\"主动服务\"与传统语音助手相比，核心差异是？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "必须先说唤醒词"
+      },
+      {
+        "label": "B",
+        "text": "能感知用户状态并主动提供服务"
+      },
+      {
+        "label": "C",
+        "text": "只能回答固定问题"
+      },
+      {
+        "label": "D",
+        "text": "不支持语音交互"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1采用\"双光机双显\"方案，主要为了实现什么显示效果？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "降低功耗"
+      },
+      {
+        "label": "B",
+        "text": "空间3D显示，让信息具备纵深与层次感"
+      },
+      {
+        "label": "C",
+        "text": "仅用于拍照取景"
+      },
+      {
+        "label": "D",
+        "text": "仅用于接听电话"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1的双光机双显方案中，二维光栅衍射波导的主要作用是？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "将Micro LED发出的光耦合并导向人眼"
+      },
+      {
+        "label": "B",
+        "text": "仅保护显示模组免受外力损伤"
+      },
+      {
+        "label": "C",
+        "text": "仅为装饰性结构件"
+      },
+      {
+        "label": "D",
+        "text": "增加整机重量以提升佩戴稳定性"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1的AI克隆同声传译，\"克隆\"主要体现在翻译时？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "模拟说话人的音色、语调和节奏"
+      },
+      {
+        "label": "B",
+        "text": "复制对方的语言习惯文件"
+      },
+      {
+        "label": "C",
+        "text": "仅复制文本内容"
+      },
+      {
+        "label": "D",
+        "text": "仅支持中文输出"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1的\"轨迹即刻成\"功能在运动结束后，可自动生成什么内容？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "运动轨迹视频或动画"
+      },
+      {
+        "label": "B",
+        "text": "心率曲线"
+      },
+      {
+        "label": "C",
+        "text": "睡眠报告"
+      },
+      {
+        "label": "D",
+        "text": "饮食建议"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1的\"智能提词\"相比传统手机提词器，主要优势是？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "台词显示在眼镜AR空间，演讲者视线更自然"
+      },
+      {
+        "label": "B",
+        "text": "需要额外携带显示屏"
+      },
+      {
+        "label": "C",
+        "text": "只能显示纯文本"
+      },
+      {
+        "label": "D",
+        "text": "仅支持手机操作"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1的\"AR截/录屏\"与普通手机截图相比，最大区别是？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "同时保存真实环境与眼镜显示内容"
+      },
+      {
+        "label": "B",
+        "text": "只能保存音频"
+      },
+      {
+        "label": "C",
+        "text": "文件体积更小"
+      },
+      {
+        "label": "D",
+        "text": "无法分享"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1的\"近眼导航\"中，\"地磁随头转\"指的是？",
+    "answer": "A",
+    "options": [
+      {
+        "label": "A",
+        "text": "地图方向随头部转动实时调整"
+      },
+      {
+        "label": "B",
+        "text": "地磁干扰校正"
+      },
+      {
+        "label": "C",
+        "text": "语音音量随头部转动变化"
+      },
+      {
+        "label": "D",
+        "text": "屏幕亮度自动调节"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1采用\"1:1均衡配重\"设计，主要目的是？",
+    "answer": "B",
+    "options": [
+      {
+        "label": "A",
+        "text": "提升显示清晰度"
+      },
+      {
+        "label": "B",
+        "text": "减少鼻梁和耳部压力，提升佩戴舒适度"
+      },
+      {
+        "label": "C",
+        "text": "增加电池容量"
+      },
+      {
+        "label": "D",
+        "text": "降低生产成本"
+      }
+    ]
+  },
+  {
+    "product": "S1",
+    "type": "mc",
+    "stem": "千问AI眼镜S1的\"主动服务AI助理\"在感知用户久坐办公时，可能主动提供哪些服务？",
+    "answer": "AB",
+    "options": [
+      {
+        "label": "A",
+        "text": "疲劳预警"
+      },
+      {
+        "label": "B",
+        "text": "久坐提醒"
+      },
+      {
+        "label": "C",
+        "text": "自动播放音乐"
+      },
+      {
+        "label": "D",
+        "text": "立即关机"
+      }
+    ]
+  }
+];
+const CONFIG = {
+  tf: { count: 20, score: 1, label: '判断题' },
+  sc: { count: 25, score: 2, label: '单选题' },
+  mc: { count: 10, score: 3, label: '多选题' }
+};
+const PASS_SCORE = 90;
+const EXAM_MINUTES = 60;
+const MANAGER_PASSWORD = 'admin';
+
+let currentBank = [];
+let currentPaper = [];
+let currentProduct = '';
+let timerInterval = null;
+let endTime = null;
+let examRecords = [];
+
+const BC_NAME = 'qwen-exam-records';
+let recordsChannel = null;
+
+function mergeRecords(incoming) {
+  if (!Array.isArray(incoming)) return;
+  const existingKeys = new Set(examRecords.map(r => `${r.name}|${r.product}|${r.score}|${r.timestamp}`));
+  incoming.forEach(r => {
+    const key = `${r.name}|${r.product}|${r.score}|${r.timestamp}`;
+    if (!existingKeys.has(key)) {
+      examRecords.push(r);
+      existingKeys.add(key);
+    }
+  });
+  examRecords.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+}
+
+if (typeof BroadcastChannel !== 'undefined') {
+  try {
+    recordsChannel = new BroadcastChannel(BC_NAME);
+    recordsChannel.onmessage = (event) => {
+      const data = event.data;
+      if (!data || !data.type) return;
+      if (data.type === 'records') {
+        mergeRecords(data.records);
+      } else if (data.type === 'append') {
+        mergeRecords(data.records);
+      } else if (data.type === 'clear') {
+        examRecords = [];
+      } else if (data.type === 'request') {
+        try {
+          recordsChannel.postMessage({ type: 'records', records: examRecords });
+        } catch (e) {}
+      }
+      if (!document.getElementById('manager-screen').classList.contains('hidden')) {
+        renderRecords();
+      }
+    };
+    recordsChannel.postMessage({ type: 'request' });
+  } catch (e) {
+    recordsChannel = null;
+  }
+}
+
+function broadcastRecords(appendOnly = false) {
+  if (!recordsChannel) return;
+  try {
+    if (appendOnly) {
+      recordsChannel.postMessage({ type: 'append', records: [examRecords[examRecords.length - 1]] });
+    } else {
+      recordsChannel.postMessage({ type: 'records', records: examRecords });
+    }
+  } catch (e) {
+    // ignore broadcast errors
+  }
+}
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function generatePaper(bank) {
+  const tf = shuffle(bank.filter(q => q.type === 'tf')).slice(0, CONFIG.tf.count);
+  const sc = shuffle(bank.filter(q => q.type === 'sc')).slice(0, CONFIG.sc.count);
+  const mc = shuffle(bank.filter(q => q.type === 'mc')).slice(0, CONFIG.mc.count);
+
+  [sc, mc].forEach(list => {
+    list.forEach(q => {
+      q.options = shuffle(q.options);
+    });
+  });
+
+  currentPaper = [
+    ...tf.map((q, idx) => ({...q, section: 'tf', seq: idx + 1})),
+    ...sc.map((q, idx) => ({...q, section: 'sc', seq: idx + 1})),
+    ...mc.map((q, idx) => ({...q, section: 'mc', seq: idx + 1}))
+  ];
+}
+
+function validateName() {
+  const nameInput = document.getElementById('user-name');
+  const nameError = document.getElementById('name-error');
+  if (!nameInput.value.trim()) {
+    nameError.classList.add('show');
+    nameInput.focus();
+    return false;
+  }
+  nameError.classList.remove('show');
+  return true;
+}
+
+function startExam(product) {
+  if (!validateName()) return;
+
+  currentProduct = product;
+  currentBank = product === 'G1' ? BANK_G1 : BANK_S1;
+
+  if (currentBank.length < CONFIG.tf.count + CONFIG.sc.count + CONFIG.mc.count) {
+    alert('题库题目数量不足，请联系管理员补充题库。');
+    return;
+  }
+
+  generatePaper(currentBank);
+  document.getElementById('cover-screen').classList.add('hidden');
+  document.getElementById('exam-screen').classList.remove('hidden');
+  document.getElementById('exam-title').textContent = `千问 ${product} 产品知识考试`;
+  renderPaper();
+  startTimer();
+}
+
+function startTimer() {
+  endTime = Date.now() + EXAM_MINUTES * 60 * 1000;
+  timerInterval = setInterval(() => {
+    const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
+    const m = Math.floor(remaining / 60).toString().padStart(2, '0');
+    const s = (remaining % 60).toString().padStart(2, '0');
+    const el = document.getElementById('timer-text');
+    el.textContent = `${m}:${s}`;
+    el.classList.toggle('warning', remaining <= 300 && remaining > 60);
+    el.classList.toggle('danger', remaining <= 60);
+    if (remaining === 0) {
+      clearInterval(timerInterval);
+      submitExam(true);
+    }
+  }, 1000);
+}
+
+function renderPaper() {
+  const paper = document.getElementById('paper');
+  let html = '';
+  let lastSection = '';
+
+  currentPaper.forEach((q, idx) => {
+    if (q.section !== lastSection) {
+      html += `<h2 class="section-title">${CONFIG[q.section].label}（共 ${CONFIG[q.section].count} 题，每题 ${CONFIG[q.section].score} 分）</h2>`;
+      lastSection = q.section;
+    }
+
+    html += `<div class="question" data-idx="${idx}">`;
+    html += `<div class="question-header">`;
+    html += `<div><span class="question-number">${q.seq}.</span><span class="question-stem">${escapeHtml(q.stem)}</span></div>`;
+    html += `<span class="question-score">${CONFIG[q.section].score} 分</span>`;
+    html += `</div>`;
+    html += `<div class="options">`;
+
+    if (q.section === 'tf') {
+      html += buildOption(idx, 'tf', 'A', '正确', '√');
+      html += buildOption(idx, 'tf', 'B', '错误', '×');
+    } else {
+      q.options.forEach(opt => {
+        const inputType = q.section === 'sc' ? 'radio' : 'checkbox';
+        html += buildOption(idx, q.section, opt.label, opt.text, opt.label, inputType);
+      });
+    }
+
+    html += `</div></div>`;
+  });
+
+  paper.innerHTML = html;
+}
+
+function buildOption(qIdx, section, value, text, answerValue, inputType='radio') {
+  const name = `q-${qIdx}`;
+  const id = `q-${qIdx}-${value}`;
+  return `<label class="option" for="${id}">
+    <input type="${inputType}" id="${id}" name="${name}" value="${answerValue}">
+    <span>${escapeHtml(value + '. ' + text)}</span>
+  </label>`;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function getUserAnswer(idx) {
+  const q = currentPaper[idx];
+  const name = `q-${idx}`;
+  if (q.section === 'mc') {
+    const selected = document.querySelectorAll(`input[name="${name}"]:checked`);
+    return Array.from(selected).map(el => el.value).sort().join('');
+  }
+  const selected = document.querySelector(`input[name="${name}"]:checked`);
+  return selected ? selected.value : '';
+}
+
+function countAnswered() {
+  let answered = 0;
+  currentPaper.forEach((q, idx) => {
+    if (getUserAnswer(idx)) answered++;
+  });
+  return answered;
+}
+
+function findFirstUnanswered() {
+  for (let i = 0; i < currentPaper.length; i++) {
+    if (!getUserAnswer(i)) return i;
+  }
+  return -1;
+}
+
+function formatAnswer(q, ans) {
+  if (!ans) return '未作答';
+  if (q.section === 'tf') {
+    return ans === '√' ? '√ 正确' : '× 错误';
+  }
+  if (q.section === 'sc') {
+    const opt = q.options.find(o => o.label === ans);
+    return opt ? `${ans}. ${opt.text}` : ans;
+  }
+  return ans.split('').map(label => {
+    const opt = q.options.find(o => o.label === label);
+    return opt ? `${label}. ${opt.text}` : label;
+  }).join('、');
+}
+
+function submitExam(auto=false) {
+  const answered = countAnswered();
+  const totalQuestions = currentPaper.length;
+
+  if (!auto && answered < totalQuestions) {
+    const firstUnanswered = findFirstUnanswered();
+    if (firstUnanswered !== -1) {
+      const questionEl = document.querySelector(`.question[data-idx="${firstUnanswered}"]`);
+      if (questionEl) {
+        questionEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        questionEl.style.transition = 'border-color 0.3s';
+        questionEl.style.borderColor = 'var(--danger)';
+        setTimeout(() => { questionEl.style.borderColor = ''; }, 2000);
+      }
+    }
+    const errorBox = document.getElementById('error-box');
+    errorBox.classList.add('show');
+    setTimeout(() => { errorBox.classList.remove('show'); }, 2500);
+    return;
+  }
+
+  document.getElementById('error-box').classList.remove('show');
+  clearInterval(timerInterval);
+
+  let total = 0;
+  let tfCorrect = 0, scCorrect = 0, mcCorrect = 0;
+  const review = [];
+
+  currentPaper.forEach((q, idx) => {
+    const userAns = getUserAnswer(idx);
+    const correct = userAns === q.answer;
+    const score = correct ? CONFIG[q.section].score : 0;
+    total += score;
+
+    if (q.section === 'tf') correct ? tfCorrect++ : null;
+    if (q.section === 'sc') correct ? scCorrect++ : null;
+    if (q.section === 'mc') correct ? mcCorrect++ : null;
+
+    if (!correct) {
+      review.push({ q, idx, userAns });
+    }
+  });
+
+  const userName = document.getElementById('user-name').value.trim();
+  examRecords.push({
+    name: userName,
+    product: currentProduct,
+    score: total,
+    passed: total >= PASS_SCORE,
+    tfCorrect,
+    scCorrect,
+    mcCorrect,
+    timestamp: new Date().toLocaleString('zh-CN')
+  });
+  broadcastRecords(true);
+
+  document.getElementById('exam-screen').classList.add('hidden');
+  document.getElementById('result-screen').classList.remove('hidden');
+
+  document.getElementById('result-title').textContent = `${userName} 的千问 ${currentProduct} 考试成绩`;
+  document.getElementById('score').textContent = total;
+  const passEl = document.getElementById('pass-status');
+  if (total >= PASS_SCORE) {
+    passEl.textContent = `恭喜，成绩合格（≥${PASS_SCORE}分）`;
+    passEl.className = 'result-pass';
+  } else {
+    passEl.textContent = `未通过，还需努力（及格线 ${PASS_SCORE} 分）`;
+    passEl.className = 'result-fail';
+  }
+
+  document.getElementById('stat-tf').textContent = `${tfCorrect}/${CONFIG.tf.count}`;
+  document.getElementById('stat-sc').textContent = `${scCorrect}/${CONFIG.sc.count}`;
+  document.getElementById('stat-mc').textContent = `${mcCorrect}/${CONFIG.mc.count}`;
+
+  let reviewHtml = '<h2 class="section-title">错题解析</h2>';
+  if (review.length === 0) {
+    reviewHtml += '<p style="text-align:center;color:var(--success);font-weight:600;">全部答对，太棒了！</p>';
+  } else {
+    review.forEach(item => {
+      const q = item.q;
+      reviewHtml += `<div class="question">`;
+      reviewHtml += `<div class="question-header">`;
+      reviewHtml += `<div><span class="question-number">${q.seq}.</span><span class="question-stem">${escapeHtml(q.stem)}</span></div>`;
+      reviewHtml += `</div>`;
+      reviewHtml += `<div class="answer-reveal">你的答案：${formatAnswer(q, item.userAns)} &nbsp;|&nbsp; 正确答案：${formatAnswer(q, q.answer)}</div>`;
+      reviewHtml += `</div>`;
+    });
+  }
+  document.getElementById('review').innerHTML = reviewHtml;
+
+  window.scrollTo(0, 0);
+}
+
+function openManager() {
+  const auth = document.getElementById('manager-auth');
+  const input = document.getElementById('manager-password-input');
+  const error = document.getElementById('manager-auth-error');
+  error.classList.remove('show');
+  input.value = '';
+  auth.classList.remove('hidden');
+  input.focus();
+}
+
+function submitManagerAuth() {
+  const input = document.getElementById('manager-password-input');
+  const error = document.getElementById('manager-auth-error');
+  if (input.value !== MANAGER_PASSWORD) {
+    error.classList.add('show');
+    input.focus();
+    return;
+  }
+  document.getElementById('manager-auth').classList.add('hidden');
+  renderRecords();
+  document.getElementById('cover-screen').classList.add('hidden');
+  document.getElementById('result-screen').classList.add('hidden');
+  document.getElementById('exam-screen').classList.add('hidden');
+  document.getElementById('manager-screen').classList.remove('hidden');
+}
+
+function cancelManagerAuth() {
+  document.getElementById('manager-auth').classList.add('hidden');
+  document.getElementById('manager-password-input').value = '';
+  document.getElementById('manager-auth-error').classList.remove('show');
+}
+
+function closeManager() {
+  document.getElementById('manager-screen').classList.add('hidden');
+  document.getElementById('cover-screen').classList.remove('hidden');
+}
+
+function renderRecords() {
+  const wrap = document.getElementById('records-table-wrap');
+  if (examRecords.length === 0) {
+    wrap.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:24px 0;">暂无考试记录</p>';
+    return;
+  }
+
+  let html = '<table class="records-table"><thead><tr>';
+  html += '<th>序号</th><th>姓名</th><th>考试</th><th>得分</th><th>判断</th><th>单选</th><th>多选</th><th>结果</th><th>考试时间</th>';
+  html += '</tr></thead><tbody>';
+
+  examRecords.forEach((r, idx) => {
+    const passClass = r.passed ? 'pass-yes' : 'pass-no';
+    const passText = r.passed ? '通过' : '未通过';
+    html += `<tr>`;
+    html += `<td>${idx + 1}</td>`;
+    html += `<td>${escapeHtml(r.name)}</td>`;
+    html += `<td>千问 ${r.product}</td>`;
+    html += `<td><strong>${r.score}</strong></td>`;
+    html += `<td>${r.tfCorrect}/20</td>`;
+    html += `<td>${r.scCorrect}/25</td>`;
+    html += `<td>${r.mcCorrect}/10</td>`;
+    html += `<td class="${passClass}">${passText}</td>`;
+    html += `<td>${escapeHtml(r.timestamp)}</td>`;
+    html += `</tr>`;
+  });
+
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function downloadFile(content, filename, mimeType) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function exportRecordsCSV() {
+  if (examRecords.length === 0) {
+    alert('暂无记录可导出');
+    return;
+  }
+  const header = '序号,姓名,考试,得分,判断正确,单选正确,多选正确,结果,考试时间\n';
+  const rows = examRecords.map((r, idx) => {
+    const passText = r.passed ? '通过' : '未通过';
+    return [
+      idx + 1,
+      `"${r.name.replace(/"/g, '""')}"`,
+      `千问 ${r.product}`,
+      r.score,
+      `${r.tfCorrect}/20`,
+      `${r.scCorrect}/25`,
+      `${r.mcCorrect}/10`,
+      passText,
+      `"${r.timestamp}"`
+    ].join(',');
+  }).join('\n');
+  downloadFile(header + rows, `考试记录_${new Date().toISOString().slice(0,10)}.csv`, 'text/csv;charset=utf-8;');
+}
+
+function exportRecordsJSON() {
+  if (examRecords.length === 0) {
+    alert('暂无记录可导出');
+    return;
+  }
+  const content = JSON.stringify(examRecords, null, 2);
+  downloadFile(content, `考试记录_${new Date().toISOString().slice(0,10)}.json`, 'application/json');
+}
+
+function importRecordsJSON(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!Array.isArray(imported)) throw new Error('文件格式错误');
+      const before = examRecords.length;
+      mergeRecords(imported);
+      const added = examRecords.length - before;
+      broadcastRecords();
+      renderRecords();
+      alert(`导入完成：新增 ${added} 条记录，跳过 ${imported.length - added} 条重复记录`);
+    } catch (err) {
+      alert('导入失败：' + err.message);
+    }
+    input.value = '';
+  };
+  reader.onerror = () => {
+    alert('读取文件失败');
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+
+let confirmCallback = null;
+function showConfirmModal(message, onConfirm) {
+  confirmCallback = onConfirm;
+  document.getElementById('confirm-message').textContent = message;
+  document.getElementById('confirm-modal').classList.remove('hidden');
+}
+function closeConfirmModal(confirmed) {
+  document.getElementById('confirm-modal').classList.add('hidden');
+  if (confirmed && typeof confirmCallback === 'function') {
+    confirmCallback();
+  }
+  confirmCallback = null;
+}
+
+function clearRecords() {
+  if (examRecords.length === 0) return;
+  showConfirmModal('确定清空所有考试记录吗？此操作不可恢复。', () => {
+    examRecords = [];
+    if (recordsChannel) {
+      try {
+        recordsChannel.postMessage({ type: 'clear' });
+      } catch (e) {}
+    }
+    renderRecords();
+  });
+}
+</script>
+</body>
+</html>
