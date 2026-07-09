@@ -3930,6 +3930,16 @@ function submitExam(auto=false) {
     }
   });
 
+  // Build wrong answers detail for backend submission
+  const wrongAnswers = review.map(item => ({
+    seq: item.q.seq,
+    section: item.q.section,
+    stem: item.q.stem,
+    options: item.q.section !== 'tf' ? item.q.options.map(o => ({ l: o.label, t: o.text })) : [],
+    correctAnswer: item.q.answer,
+    userAnswer: item.userAns
+  }));
+
   const userName = document.getElementById('user-name').value.trim();
   const record = {
     name: userName,
@@ -3939,7 +3949,8 @@ function submitExam(auto=false) {
     tfCorrect,
     scCorrect,
     mcCorrect,
-    timestamp: new Date().toLocaleString('zh-CN')
+    timestamp: new Date().toLocaleString('zh-CN'),
+    wrongAnswers: wrongAnswers
   };
   examRecords.push(record);
   broadcastRecords(true);
@@ -4035,12 +4046,15 @@ function renderRecords() {
   }
 
   let html = '<table class="records-table"><thead><tr>';
-  html += '<th>序号</th><th>姓名</th><th>考试</th><th>得分</th><th>判断</th><th>单选</th><th>多选</th><th>结果</th><th>考试时间</th>';
+  html += '<th>序号</th><th>姓名</th><th>考试</th><th>得分</th><th>判断</th><th>单选</th><th>多选</th><th>结果</th><th>考试时间</th><th>错题</th>';
   html += '</tr></thead><tbody>';
 
   examRecords.forEach((r, idx) => {
     const passClass = r.passed ? 'pass-yes' : 'pass-no';
     const passText = r.passed ? '通过' : '未通过';
+    const hasWrong = r.wrongAnswers && r.wrongAnswers.length > 0;
+    const wrongCount = hasWrong ? r.wrongAnswers.length : 0;
+    const totalQ = (r.tfCorrect || 0) + (r.scCorrect || 0) + (r.mcCorrect || 0) + wrongCount;
     html += `<tr>`;
     html += `<td>${idx + 1}</td>`;
     html += `<td>${escapeHtml(r.name)}</td>`;
@@ -4051,11 +4065,53 @@ function renderRecords() {
     html += `<td>${r.mcCorrect}/10</td>`;
     html += `<td class="${passClass}">${passText}</td>`;
     html += `<td>${escapeHtml(r.timestamp)}</td>`;
+    html += hasWrong
+      ? `<td><a href="javascript:void(0)" onclick="showWrongAnswers(${idx})" style="color:var(--primary);text-decoration:underline;">${wrongCount}道错题</a></td>`
+      : `<td style="color:var(--text-secondary);">无数据</td>`;
     html += `</tr>`;
   });
 
   html += '</tbody></table>';
   wrap.innerHTML = html;
+}
+
+function showWrongAnswers(idx) {
+  const r = examRecords[idx];
+  if (!r || !r.wrongAnswers || r.wrongAnswers.length === 0) {
+    alert('该记录没有错题数据');
+    return;
+  }
+  const sectionNames = { tf: '判断题', sc: '单选题', mc: '多选题' };
+  let html = `<div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)this.remove()">`;
+  html += `<div style="background:#fff;border-radius:16px;max-width:800px;width:100%;max-height:85vh;overflow-y:auto;padding:28px;box-shadow:0 8px 32px rgba(0,0,0,0.15);">`;
+  html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">`;
+  html += `<h2 style="margin:0;font-size:20px;">${escapeHtml(r.name)} — 千问 ${r.product} 错题解析</h2>`;
+  html += `<button onclick="this.closest('div[style]').remove()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#999;padding:4px 8px;">&times;</button>`;
+  html += `</div>`;
+  html += `<p style="color:var(--text-secondary);margin:0 0 16px;font-size:14px;">得分：${r.score} 分 | 共 ${r.wrongAnswers.length} 道错题 | ${r.timestamp}</p>`;
+
+  let lastSection = '';
+  r.wrongAnswers.forEach((w, i) => {
+    if (w.section !== lastSection) {
+      lastSection = w.section;
+      html += `<h3 style="font-size:16px;color:var(--primary);margin:20px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--primary-light);">${sectionNames[w.section] || w.section}</h3>`;
+    }
+    html += `<div style="margin-bottom:16px;padding:14px;background:#f8f9fa;border-radius:10px;border-left:4px solid var(--danger,#e53e3e);">`;
+    html += `<div style="font-weight:600;margin-bottom:8px;">第${w.seq}题：${escapeHtml(w.stem)}</div>`;
+    if (w.options && w.options.length > 0) {
+      w.options.forEach(opt => {
+        html += `<div style="padding:2px 0;font-size:14px;">${escapeHtml(opt.l)}. ${escapeHtml(opt.t)}</div>`;
+      });
+    }
+    const userDisplay = w.userAnswer || '未作答';
+    const correctDisplay = w.correctAnswer || '未知';
+    html += `<div style="margin-top:8px;font-size:14px;"><span style="color:var(--danger,#e53e3e);">你的答案：${escapeHtml(userDisplay)}</span></div>`;
+    html += `<div style="font-size:14px;"><span style="color:var(--success,#38a169);">正确答案：${escapeHtml(correctDisplay)}</span></div>`;
+    html += `</div>`;
+  });
+
+  html += `</div></div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
 }
 
 function downloadFile(content, filename, mimeType) {
