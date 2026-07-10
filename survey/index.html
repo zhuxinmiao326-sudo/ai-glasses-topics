@@ -559,12 +559,7 @@ document.getElementById('surveyForm').addEventListener('submit', function(e) {
 
   if (errors.length > 0) {
     if (firstErrorEl) {
-      var targetEl = firstErrorEl;
-      requestAnimationFrame(function() {
-        requestAnimationFrame(function() {
-          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
-        });
-      });
+      firstErrorEl.scrollIntoView({ behavior: 'instant', block: 'start' });
     }
     return;
   }
