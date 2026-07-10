@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>千问AI耳机配色命名调研问卷</title>
+<style>
+:root {
+  --primary: #4F46E5;
+  --primary-light: #EEF2FF;
+  --bg: #F8FAFC;
+  --card: #FFFFFF;
+  --text: #1E293B;
+  --text-secondary: #64748B;
+  --border: #E2E8F0;
+  --danger: #EF4444;
+  --success: #10B981;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+.container { max-width: 780px; margin: 0 auto; padding: 24px 16px 80px; }
+
+.header { text-align: center; padding: 40px 20px 32px; }
+.header h1 { font-size: 28px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+.header .subtitle { font-size: 15px; color: var(--text-secondary); line-height: 1.7; }
+.header .highlight { color: var(--primary); font-weight: 600; }
+
+.section { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 28px 24px; margin-bottom: 20px; }
+.section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.section-badge { background: var(--primary); color: white; font-size: 13px; font-weight: 600; padding: 4px 12px; border-radius: 20px; white-space: nowrap; }
+.section-title { font-size: 18px; font-weight: 700; }
+
+.question { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.question:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.q-label { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--text); }
+.q-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; }
+
+.options { display: flex; flex-direction: column; gap: 6px; }
+.option { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.15s; font-size: 14px; }
+.option:hover { border-color: var(--primary); background: var(--primary-light); }
+.option input { display: none; }
+.option.checked { border-color: var(--primary); background: var(--primary-light); }
+.option .radio { width: 20px; height: 20px; border: 2px solid #CBD5E1; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+.option.checked .radio { border-color: var(--primary); }
+.option.checked .radio::after { content: ''; width: 10px; height: 10px; background: var(--primary); border-radius: 50%; }
+.option .checkbox { width: 20px; height: 20px; border: 2px solid #CBD5E1; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+.option.checked .checkbox { border-color: var(--primary); background: var(--primary); }
+.option.checked .checkbox::after { content: '✓'; color: white; font-size: 13px; font-weight: bold; }
+
+/* Matrix Likert Scale */
+.matrix-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.matrix-table th, .matrix-table td { text-align: center; padding: 8px 4px; }
+.matrix-table thead th { font-weight: 600; color: var(--text-secondary); font-size: 12px; border-bottom: 2px solid var(--border); padding-bottom: 12px; }
+.matrix-table thead th:first-child { text-align: left; padding-left: 8px; }
+.matrix-table tbody td:first-child { text-align: left; font-weight: 500; padding-left: 8px; font-size: 14px; }
+.matrix-table tbody tr { border-bottom: 1px solid #F1F5F9; }
+.matrix-table tbody tr:hover { background: #F8FAFC; }
+.matrix-cell { cursor: pointer; }
+.matrix-cell .circle { width: 24px; height: 24px; border: 2px solid #CBD5E1; border-radius: 50%; margin: 0 auto; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
+.matrix-cell:hover .circle { border-color: var(--primary); }
+.matrix-cell.selected .circle { border-color: var(--primary); background: var(--primary); }
+.matrix-cell.selected .circle::after { content: ''; width: 8px; height: 8px; background: white; border-radius: 50%; }
+.matrix-scale-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); padding: 0 8px; margin-top: 4px; }
+
+.text-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; resize: vertical; min-height: 60px; transition: border-color 0.15s; }
+.text-input:focus { outline: none; border-color: var(--primary); }
+
+.required-star { color: var(--danger); margin-left: 2px; }
+.error-msg { color: var(--danger); font-size: 13px; margin-top: 6px; display: none; }
+
+.submit-section { text-align: center; padding: 32px 0; }
+.btn-submit { background: var(--primary); color: white; border: none; padding: 14px 48px; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.btn-submit:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
+.btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.success-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+.success-overlay.show { display: flex; }
+.success-card { background: white; border-radius: var(--radius); padding: 40px; text-align: center; max-width: 400px; width: 90%; }
+.success-card .icon { font-size: 48px; margin-bottom: 16px; }
+.success-card h2 { font-size: 20px; margin-bottom: 8px; }
+.success-card p { color: var(--text-secondary); font-size: 14px; }
+
+.footer { text-align: center; color: var(--text-secondary); font-size: 12px; padding: 20px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+  <h1>🎧 千问AI耳机配色命名调研问卷</h1>
+  <p class="subtitle">
+    感谢您参与本次调研。我们正在筹备<span class="highlight">千问AI耳机</span>新品的上市，<br>
+    目前已经确定了三款配色——<span class="highlight">黑色、银白色、紫色</span>。<br>
+    本问卷旨在了解用户对智能耳机配色命名的偏好与感知，<br>
+    所有数据仅用于研究分析，预计耗时约 <span class="highlight">5-8 分钟</span>。
+  </p>
+</div>
+
+<form id="surveyForm">
+
+<!-- ===== PART 0: 命名与购买 ===== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-badge">PART 0</span>
+    <span class="section-title">命名与购买决策</span>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q1. 您的性别<span class="required-star">*</span></div>
+    <div class="options" data-name="gender" data-type="single">
+      <label class="option"><input type="radio" name="gender" value="男"><span class="radio"></span>男</label>
+      <label class="option"><input type="radio" name="gender" value="女"><span class="radio"></span>女</label>
+    </div>
+    <div class="error-msg">请选择您的性别</div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q2. 您的年龄段<span class="required-star">*</span></div>
+    <div class="options" data-name="age" data-type="single">
+      <label class="option"><input type="radio" name="age" value="20岁以下"><span class="radio"></span>20岁以下</label>
+      <label class="option"><input type="radio" name="age" value="20-30岁"><span class="radio"></span>20-30岁</label>
+      <label class="option"><input type="radio" name="age" value="31-40岁"><span class="radio"></span>31-40岁</label>
+      <label class="option"><input type="radio" name="age" value="41岁及以上"><span class="radio"></span>41岁及以上</label>
+    </div>
+    <div class="error-msg">请选择您的年龄段</div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q3. 您购买智能耳机时，配色对您的购买决策影响程度？</div>
+    <div class="options" data-name="color_impact" data-type="single">
+      <label class="option"><input type="radio" name="color_impact" value="非常重要，配色是核心因素之一"><span class="radio"></span>非常重要，配色是选产品的核心因素之一</label>
+      <label class="option"><input type="radio" name="color_impact" value="比较重要，会优先考虑好看的配色"><span class="radio"></span>比较重要，会优先考虑好看的配色</label>
+      <label class="option"><input type="radio" name="color_impact" value="一般，配色和功能/音质并重"><span class="radio"></span>一般，配色和功能/音质并重</label>
+      <label class="option"><input type="radio" name="color_impact" value="不太重要，主要看功能和音质"><span class="radio"></span>不太重要，主要看功能和音质</label>
+      <label class="option"><input type="radio" name="color_impact" value="完全不重要"><span class="radio"></span>完全不重要</label>
+    </div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q4. 您认为配色命名会影响您对耳机产品的第一印象吗？</div>
+    <div class="options" data-name="naming_impression" data-type="single">
+      <label class="option"><input type="radio" name="naming_impression" value="会明显影响，命名好的配色更吸引我"><span class="radio"></span>会明显影响，命名好的配色更吸引我</label>
+      <label class="option"><input type="radio" name="naming_impression" value="有一定影响，但不是主要因素"><span class="radio"></span>有一定影响，但不是主要因素</label>
+      <label class="option"><input type="radio" name="naming_impression" value="几乎不影响，主要看颜色本身"><span class="radio"></span>几乎不影响，主要看颜色本身</label>
+      <label class="option"><input type="radio" name="naming_impression" value="完全不影响"><span class="radio"></span>完全不影响</label>
+    </div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q5. 假设两款智能耳机功能、音质、价格完全相同，您会倾向选择？</div>
+    <div class="options" data-name="naming_choice" data-type="single">
+      <label class="option"><input type="radio" name="naming_choice" value="配色命名更好听、更有质感的那款"><span class="radio"></span>配色命名更好听、更有质感的那款</label>
+      <label class="option"><input type="radio" name="naming_choice" value="配色命名普通但颜色本身喜欢的那款"><span class="radio"></span>配色命名普通但颜色本身喜欢的那款</label>
+      <label class="option"><input type="radio" name="naming_choice" value="两者都无所谓，看其他因素"><span class="radio"></span>两者都无所谓，看其他因素</label>
+    </div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q6. 如果一款耳机的配色命名让您感觉高级、有科技感，您是否愿意为此多付一点费用（溢价10%以内）？</div>
+    <div class="options" data-name="premium_willing" data-type="single">
+      <label class="option"><input type="radio" name="premium_willing" value="愿意，命名体现品牌调性，值得溢价"><span class="radio"></span>愿意，命名体现品牌调性，值得溢价</label>
+      <label class="option"><input type="radio" name="premium_willing" value="看情况，如果整体产品确实好可以接受"><span class="radio"></span>看情况，如果整体产品确实好可以接受</label>
+      <label class="option"><input type="radio" name="premium_willing" value="不愿意，命名只是标签，不应该影响价格"><span class="radio"></span>不愿意，命名只是标签，不应该影响价格</label>
+    </div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q7. 以下哪种情况会让您因为配色命名对产品产生负面印象？（可多选）</div>
+    <div class="options" data-name="naming_negative" data-type="multi">
+      <label class="option"><input type="checkbox" name="naming_negative" value="命名太普通，感觉产品没诚意"><span class="checkbox"></span>命名太普通，感觉产品没诚意（如"黑色""白色"）</label>
+      <label class="option"><input type="checkbox" name="naming_negative" value="命名太难念，记不住"><span class="checkbox"></span>命名太难念，记不住</label>
+      <label class="option"><input type="checkbox" name="naming_negative" value="命名和实际颜色对不上，感觉被误导"><span class="checkbox"></span>命名和实际颜色对不上，感觉被误导</label>
+      <label class="option"><input type="checkbox" name="naming_negative" value="命名太花哨/浮夸，感觉在炒作概念"><span class="checkbox"></span>命名太花哨/浮夸，感觉在炒作概念</label>
+      <label class="option"><input type="checkbox" name="naming_negative" value="命名和其他品牌太像，感觉在模仿"><span class="checkbox"></span>命名和其他品牌太像，感觉在模仿</label>
+      <label class="option"><input type="checkbox" name="naming_negative" value="以上都不会"><span class="checkbox"></span>以上都不会</label>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PART 1: 黑色命名 ===== -->
+<div class="section" id="part1">
+  <div class="section-header">
+    <span class="section-badge">PART 1</span>
+    <span class="section-title">黑色命名评分</span>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q8. 请为以下黑色命名打分<span class="required-star">*</span></div>
+    <div class="q-desc">1 = 非常不喜欢，5 = 非常喜欢。请对每个命名选择一个分数。</div>
+    <table class="matrix-table" data-name="black_scores" data-type="matrix" data-rows="曜石黑,午夜黑,星夜黑,石墨黑,星渚黑,极夜黑,深空黑">
+      <thead>
+        <tr><th style="width:120px">命名</th><th>1分</th><th>2分</th><th>3分</th><th>4分</th><th>5分</th></tr>
+      </thead>
+      <tbody id="blackMatrix"></tbody>
+    </table>
+    <div class="matrix-scale-label"><span>← 非常不喜欢</span><span>非常喜欢 →</span></div>
+    <div class="error-msg" style="margin-top:8px">请为每个黑色命名打分</div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q9. 以上黑色命名中，您最喜欢哪一个？<span class="required-star">*</span></div>
+    <div class="options" data-name="black_favorite" data-type="single">
+      <label class="option"><input type="radio" name="black_favorite" value="曜石黑"><span class="radio"></span>A. 曜石黑</label>
+      <label class="option"><input type="radio" name="black_favorite" value="午夜黑"><span class="radio"></span>B. 午夜黑</label>
+      <label class="option"><input type="radio" name="black_favorite" value="星夜黑"><span class="radio"></span>C. 星夜黑</label>
+      <label class="option"><input type="radio" name="black_favorite" value="石墨黑"><span class="radio"></span>D. 石墨黑</label>
+      <label class="option"><input type="radio" name="black_favorite" value="星渚黑"><span class="radio"></span>E. 星渚黑</label>
+      <label class="option"><input type="radio" name="black_favorite" value="极夜黑"><span class="radio"></span>F. 极夜黑</label>
+      <label class="option"><input type="radio" name="black_favorite" value="深空黑"><span class="radio"></span>G. 深空黑</label>
+    </div>
+    <div class="error-msg">请选择您最喜欢的黑色命名</div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q10. 您选择这个命名的主要原因是什么？（可多选）<span class="required-star">*</span></div>
+    <div class="options" data-name="black_reason_like" data-type="multi">
+      <label class="option"><input type="checkbox" name="black_reason_like" value="有科技感，未来感"><span class="checkbox"></span>A. 有科技感，未来感</label>
+      <label class="option"><input type="checkbox" name="black_reason_like" value="有质感/高级感"><span class="checkbox"></span>B. 有质感/高级感</label>
+      <label class="option"><input type="checkbox" name="black_reason_like" value="名字好听，念起来顺口"><span class="checkbox"></span>C. 名字好听，念起来顺口</label>
+      <label class="option"><input type="checkbox" name="black_reason_like" value="有辨识度，能让人记住"><span class="checkbox"></span>D. 有辨识度，能让人记住</label>
+      <label class="option"><input type="checkbox" name="black_reason_like" value="有神秘/深邃的意境"><span class="checkbox"></span>E. 有神秘/深邃的意境</label>
+      <label class="option"><input type="checkbox" name="black_reason_like" value="和黑色的关联感强"><span class="checkbox"></span>F. 和黑色的关联感强</label>
+      <label class="option"><input type="checkbox" name="black_reason_like" value="其他"><span class="checkbox"></span>G. 其他</label>
+    </div>
+    <div class="error-msg">请至少选择一个原因</div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q11. 以上黑色命名中，您最不喜欢哪一个？<span class="required-star">*</span></div>
+    <div class="options" data-name="black_least" data-type="single">
+      <label class="option"><input type="radio" name="black_least" value="曜石黑"><span class="radio"></span>A. 曜石黑</label>
+      <label class="option"><input type="radio" name="black_least" value="午夜黑"><span class="radio"></span>B. 午夜黑</label>
+      <label class="option"><input type="radio" name="black_least" value="星夜黑"><span class="radio"></span>C. 星夜黑</label>
+      <label class="option"><input type="radio" name="black_least" value="石墨黑"><span class="radio"></span>D. 石墨黑</label>
+      <label class="option"><input type="radio" name="black_least" value="星渚黑"><span class="radio"></span>E. 星渚黑</label>
+      <label class="option"><input type="radio" name="black_least" value="极夜黑"><span class="radio"></span>F. 极夜黑</label>
+      <label class="option"><input type="radio" name="black_least" value="深空黑"><span class="radio"></span>G. 深空黑</label>
+    </div>
+    <div class="error-msg">请选择您最不喜欢的黑色命名</div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q12. 您不喜欢这个命名的主要原因是什么？（可多选）<span class="required-star">*</span></div>
+    <div class="options" data-name="black_reason_dislike" data-type="multi">
+      <label class="option"><input type="checkbox" name="black_reason_dislike" value="没有科技感，太普通"><span class="checkbox"></span>A. 没有科技感，太普通</label>
+      <label class="option"><input type="checkbox" name="black_reason_dislike" value="听起来像其他品牌的产品名"><span class="checkbox"></span>B. 听起来像其他品牌的产品名</label>
+      <label class="option"><input type="checkbox" name="black_reason_dislike" value="不好念，不好记"><span class="checkbox"></span>C. 不好念，不好记</label>
+      <label class="option"><input type="checkbox" name="black_reason_dislike" value="没有辨识度，没特色"><span class="checkbox"></span>D. 没有辨识度，没特色</label>
+      <label class="option"><input type="checkbox" name="black_reason_dislike" value="字面含义与黑色耳机关联弱"><span class="checkbox"></span>E. 字面含义与黑色耳机关联弱</label>
+      <label class="option"><input type="checkbox" name="black_reason_dislike" value="感觉太老气/过时"><span class="checkbox"></span>F. 感觉太老气/过时</label>
+      <label class="option"><input type="checkbox" name="black_reason_dislike" value="其他"><span class="checkbox"></span>G. 其他</label>
+    </div>
+    <div class="error-msg">请至少选择一个原因</div>
+  </div>
+</div>
+
+<!-- ===== PART 2: 银白色命名 ===== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-badge">PART 2</span>
+    <span class="section-title">银白色命名评分</span>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q13. 请为以下银白色命名打分<span class="required-star">*</span></div>
+    <div class="q-desc">1 = 非常不喜欢，5 = 非常喜欢。请对每个命名选择一个分数。</div>
+    <table class="matrix-table" data-name="silver_scores" data-type="matrix" data-rows="流光银,星光银,月华银,羽纱银,晨霜银,霜华银,钛空银">
+      <thead>
+        <tr><th style="width:120px">命名</th><th>1分</th><th>2分</th><th>3分</th><th>4分</th><th>5分</th></tr>
+      </thead>
+      <tbody id="silverMatrix"></tbody>
+    </table>
+    <div class="matrix-scale-label"><span>← 非常不喜欢</span><span>非常喜欢 →</span></div>
+    <div class="error-msg" style="margin-top:8px">请为每个银白色命名打分</div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q14. 以上银白色命名中，您最喜欢哪一个？<span class="required-star">*</span></div>
+    <div class="options" data-name="silver_favorite" data-type="single">
+      <label class="option"><input type="radio" name="silver_favorite" value="流光银"><span class="radio"></span>A. 流光银</label>
+      <label class="option"><input type="radio" name="silver_favorite" value="星光银"><span class="radio"></span>B. 星光银</label>
+      <label class="option"><input type="radio" name="silver_favorite" value="月华银"><span class="radio"></span>C. 月华银</label>
+      <label class="option"><input type="radio" name="silver_favorite" value="羽纱银"><span class="radio"></span>D. 羽纱银</label>
+      <label class="option"><input type="radio" name="silver_favorite" value="晨霜银"><span class="radio"></span>E. 晨霜银</label>
+      <label class="option"><input type="radio" name="silver_favorite" value="霜华银"><span class="radio"></span>F. 霜华银</label>
+      <label class="option"><input type="radio" name="silver_favorite" value="钛空银"><span class="radio"></span>G. 钛空银</label>
+    </div>
+    <div class="error-msg">请选择您最喜欢的银白色命名</div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q15. 您选择这个命名的主要原因是什么？（可多选）<span class="required-star">*</span></div>
+    <div class="options" data-name="silver_reason_like" data-type="multi">
+      <label class="option"><input type="checkbox" name="silver_reason_like" value="有光泽感/质感"><span class="checkbox"></span>A. 有光泽感/质感</label>
+      <label class="option"><input type="checkbox" name="silver_reason_like" value="有意境，诗意"><span class="checkbox"></span>B. 有意境，诗意</label>
+      <label class="option"><input type="checkbox" name="silver_reason_like" value="名字好听，念起来顺口"><span class="checkbox"></span>C. 名字好听，念起来顺口</label>
+      <label class="option"><input type="checkbox" name="silver_reason_like" value="有科技感，未来感"><span class="checkbox"></span>D. 有科技感，未来感</label>
+      <label class="option"><input type="checkbox" name="silver_reason_like" value="有温柔/雅致的感觉"><span class="checkbox"></span>E. 有温柔/雅致的感觉</label>
+      <label class="option"><input type="checkbox" name="silver_reason_like" value="和银白色的关联感强"><span class="checkbox"></span>F. 和银白色的关联感强</label>
+      <label class="option"><input type="checkbox" name="silver_reason_like" value="其他"><span class="checkbox"></span>G. 其他</label>
+    </div>
+    <div class="error-msg">请至少选择一个原因</div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q16. 以上银白色命名中，您最不喜欢哪一个？<span class="required-star">*</span></div>
+    <div class="options" data-name="silver_least" data-type="single">
+      <label class="option"><input type="radio" name="silver_least" value="流光银"><span class="radio"></span>A. 流光银</label>
+      <label class="option"><input type="radio" name="silver_least" value="星光银"><span class="radio"></span>B. 星光银</label>
+      <label class="option"><input type="radio" name="silver_least" value="月华银"><span class="radio"></span>C. 月华银</label>
+      <label class="option"><input type="radio" name="silver_least" value="羽纱银"><span class="radio"></span>D. 羽纱银</label>
+      <label class="option"><input type="radio" name="silver_least" value="晨霜银"><span class="radio"></span>E. 晨霜银</label>
+      <label class="option"><input type="radio" name="silver_least" value="霜华银"><span class="radio"></span>F. 霜华银</label>
+      <label class="option"><input type="radio" name="silver_least" value="钛空银"><span class="radio"></span>G. 钛空银</label>
+    </div>
+    <div class="error-msg">请选择您最不喜欢的银白色命名</div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q17. 您不喜欢这个命名的主要原因是什么？（可多选）<span class="required-star">*</span></div>
+    <div class="options" data-name="silver_reason_dislike" data-type="multi">
+      <label class="option"><input type="checkbox" name="silver_reason_dislike" value="没有质感，太普通"><span class="checkbox"></span>A. 没有质感，太普通</label>
+      <label class="option"><input type="checkbox" name="silver_reason_dislike" value="听起来像其他品牌的产品名"><span class="checkbox"></span>B. 听起来像其他品牌的产品名</label>
+      <label class="option"><input type="checkbox" name="silver_reason_dislike" value="不好念，不好记"><span class="checkbox"></span>C. 不好念，不好记</label>
+      <label class="option"><input type="checkbox" name="silver_reason_dislike" value="没有辨识度，没特色"><span class="checkbox"></span>D. 没有辨识度，没特色</label>
+      <label class="option"><input type="checkbox" name="silver_reason_dislike" value="字面含义与银白色关联弱"><span class="checkbox"></span>E. 字面含义与银白色关联弱</label>
+      <label class="option"><input type="checkbox" name="silver_reason_dislike" value="感觉太文艺/不搭产品调性"><span class="checkbox"></span>F. 感觉太文艺/不搭产品调性</label>
+      <label class="option"><input type="checkbox" name="silver_reason_dislike" value="其他"><span class="checkbox"></span>G. 其他</label>
+    </div>
+    <div class="error-msg">请至少选择一个原因</div>
+  </div>
+</div>
+
+<!-- ===== PART 3: 紫色命名 ===== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-badge">PART 3</span>
+    <span class="section-title">紫色命名评分</span>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q18. 请为以下紫色命名打分<span class="required-star">*</span></div>
+    <div class="q-desc">1 = 非常不喜欢，5 = 非常喜欢。请对每个命名选择一个分数。</div>
+    <table class="matrix-table" data-name="purple_scores" data-type="matrix" data-rows="锻光紫,兰雾紫,霞光紫,暮山紫,凝夜紫,幻梦紫">
+      <thead>
+        <tr><th style="width:120px">命名</th><th>1分</th><th>2分</th><th>3分</th><th>4分</th><th>5分</th></tr>
+      </thead>
+      <tbody id="purpleMatrix"></tbody>
+    </table>
+    <div class="matrix-scale-label"><span>← 非常不喜欢</span><span>非常喜欢 →</span></div>
+    <div class="error-msg" style="margin-top:8px">请为每个紫色命名打分</div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q19. 以上紫色命名中，您最喜欢哪一个？<span class="required-star">*</span></div>
+    <div class="options" data-name="purple_favorite" data-type="single">
+      <label class="option"><input type="radio" name="purple_favorite" value="锻光紫"><span class="radio"></span>A. 锻光紫</label>
+      <label class="option"><input type="radio" name="purple_favorite" value="兰雾紫"><span class="radio"></span>B. 兰雾紫</label>
+      <label class="option"><input type="radio" name="purple_favorite" value="霞光紫"><span class="radio"></span>C. 霞光紫</label>
+      <label class="option"><input type="radio" name="purple_favorite" value="暮山紫"><span class="radio"></span>D. 暮山紫</label>
+      <label class="option"><input type="radio" name="purple_favorite" value="凝夜紫"><span class="radio"></span>E. 凝夜紫</label>
+      <label class="option"><input type="radio" name="purple_favorite" value="幻梦紫"><span class="radio"></span>F. 幻梦紫</label>
+    </div>
+    <div class="error-msg">请选择您最喜欢的紫色命名</div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q20. 您选择这个命名的主要原因是什么？（可多选）<span class="required-star">*</span></div>
+    <div class="options" data-name="purple_reason_like" data-type="multi">
+      <label class="option"><input type="checkbox" name="purple_reason_like" value="有浪漫/艺术感"><span class="checkbox"></span>A. 有浪漫/艺术感</label>
+      <label class="option"><input type="checkbox" name="purple_reason_like" value="有高级感/神秘感"><span class="checkbox"></span>B. 有高级感/神秘感</label>
+      <label class="option"><input type="checkbox" name="purple_reason_like" value="名字好听，念起来顺口"><span class="checkbox"></span>C. 名字好听，念起来顺口</label>
+      <label class="option"><input type="checkbox" name="purple_reason_like" value="有意境/诗意"><span class="checkbox"></span>D. 有意境/诗意</label>
+      <label class="option"><input type="checkbox" name="purple_reason_like" value="和紫色的关联感强"><span class="checkbox"></span>E. 和紫色的关联感强</label>
+      <label class="option"><input type="checkbox" name="purple_reason_like" value="有个性/辨识度高"><span class="checkbox"></span>F. 有个性/辨识度高</label>
+      <label class="option"><input type="checkbox" name="purple_reason_like" value="其他"><span class="checkbox"></span>G. 其他</label>
+    </div>
+    <div class="error-msg">请至少选择一个原因</div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q21. 以上紫色命名中，您最不喜欢哪一个？<span class="required-star">*</span></div>
+    <div class="options" data-name="purple_least" data-type="single">
+      <label class="option"><input type="radio" name="purple_least" value="锻光紫"><span class="radio"></span>A. 锻光紫</label>
+      <label class="option"><input type="radio" name="purple_least" value="兰雾紫"><span class="radio"></span>B. 兰雾紫</label>
+      <label class="option"><input type="radio" name="purple_least" value="霞光紫"><span class="radio"></span>C. 霞光紫</label>
+      <label class="option"><input type="radio" name="purple_least" value="暮山紫"><span class="radio"></span>D. 暮山紫</label>
+      <label class="option"><input type="radio" name="purple_least" value="凝夜紫"><span class="radio"></span>E. 凝夜紫</label>
+      <label class="option"><input type="radio" name="purple_least" value="幻梦紫"><span class="radio"></span>F. 幻梦紫</label>
+    </div>
+    <div class="error-msg">请选择您最不喜欢的紫色命名</div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q22. 您不喜欢这个命名的主要原因是什么？（可多选）<span class="required-star">*</span></div>
+    <div class="options" data-name="purple_reason_dislike" data-type="multi">
+      <label class="option"><input type="checkbox" name="purple_reason_dislike" value="没有高级感，太普通"><span class="checkbox"></span>A. 没有高级感，太普通</label>
+      <label class="option"><input type="checkbox" name="purple_reason_dislike" value="听起来像其他品牌的产品名"><span class="checkbox"></span>B. 听起来像其他品牌的产品名</label>
+      <label class="option"><input type="checkbox" name="purple_reason_dislike" value="不好念，不好记"><span class="checkbox"></span>C. 不好念，不好记</label>
+      <label class="option"><input type="checkbox" name="purple_reason_dislike" value="没有辨识度，没特色"><span class="checkbox"></span>D. 没有辨识度，没特色</label>
+      <label class="option"><input type="checkbox" name="purple_reason_dislike" value="字面含义与紫色关联弱"><span class="checkbox"></span>E. 字面含义与紫色关联弱</label>
+      <label class="option"><input type="checkbox" name="purple_reason_dislike" value="感觉太女性化/受众太窄"><span class="checkbox"></span>F. 感觉太女性化/受众太窄</label>
+      <label class="option"><input type="checkbox" name="purple_reason_dislike" value="其他"><span class="checkbox"></span>G. 其他</label>
+    </div>
+    <div class="error-msg">请至少选择一个原因</div>
+  </div>
+</div>
+
+<!-- ===== PART 4: 综合对比 ===== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-badge">PART 4</span>
+    <span class="section-title">综合对比</span>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q23. 以下 7 套完整命名方案，您最推荐哪一套？<span class="required-star">*</span></div>
+    <div class="options" data-name="best_combo" data-type="single">
+      <label class="option"><input type="radio" name="best_combo" value="A"><span class="radio"></span><b>A. 高端溢价：</b>曜石黑 / 流光银 / 锻光紫</label>
+      <label class="option"><input type="radio" name="best_combo" value="B"><span class="radio"></span><b>B. 走量：</b>午夜黑 / 星光银 / 兰雾紫</label>
+      <label class="option"><input type="radio" name="best_combo" value="C"><span class="radio"></span><b>C. 走量：</b>星夜黑 / 月华银 / 霞光紫</label>
+      <label class="option"><input type="radio" name="best_combo" value="D"><span class="radio"></span><b>D. 限量：</b>石墨黑 / 羽纱银 / 兰雾紫</label>
+      <label class="option"><input type="radio" name="best_combo" value="E"><span class="radio"></span><b>E. 限量：</b>星渚黑 / 晨霜银 / 暮山紫</label>
+      <label class="option"><input type="radio" name="best_combo" value="F"><span class="radio"></span><b>F. 限量：</b>极夜黑 / 霜华银 / 凝夜紫</label>
+      <label class="option"><input type="radio" name="best_combo" value="G"><span class="radio"></span><b>G. AI差异：</b>深空黑 / 钛空银 / 幻梦紫</label>
+    </div>
+    <div class="error-msg">请选择您最推荐的方案</div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q24. 您认为这套命名最打动您的原因是什么？（可多选）<span class="required-star">*</span></div>
+    <div class="options" data-name="combo_reason" data-type="multi">
+      <label class="option"><input type="checkbox" name="combo_reason" value="三色命名风格统一，有系列感"><span class="checkbox"></span>A. 三色命名风格统一，有系列感</label>
+      <label class="option"><input type="checkbox" name="combo_reason" value="听起来高级有质感"><span class="checkbox"></span>B. 听起来高级有质感</label>
+      <label class="option"><input type="checkbox" name="combo_reason" value="好记好念"><span class="checkbox"></span>C. 好记好念</label>
+      <label class="option"><input type="checkbox" name="combo_reason" value="有科技感"><span class="checkbox"></span>D. 有科技感</label>
+      <label class="option"><input type="checkbox" name="combo_reason" value="有意境/诗意"><span class="checkbox"></span>E. 有意境/诗意</label>
+    </div>
+    <div class="error-msg">请至少选择一个原因</div>
+  </div>
+
+  <div class="question">
+    <div class="q-label">Q25. 如果您对配色命名有其他想法或建议，欢迎写下（选填）</div>
+    <textarea class="text-input" name="suggest_black" placeholder="黑色命名建议..."></textarea>
+    <textarea class="text-input" name="suggest_silver" placeholder="银白色命名建议..." style="margin-top:8px"></textarea>
+    <textarea class="text-input" name="suggest_purple" placeholder="紫色命名建议..." style="margin-top:8px"></textarea>
+  </div>
+</div>
+
+<!-- Submit -->
+<div class="submit-section">
+  <button type="submit" class="btn-submit" id="submitBtn">提交问卷</button>
+</div>
+
+</form>
+
+<div class="footer">千问AI耳机 · 配色命名调研 · 数据仅用于内部研究</div>
+
+<!-- Success Overlay -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-card">
+    <div class="icon">✅</div>
+    <h2>提交成功</h2>
+    <p>感谢您的参与！您的意见对我们非常重要。</p>
+  </div>
+</div>
+
+<script>
+// ========== Matrix Table Generation ==========
+function buildMatrix(tableEl, rows, colCount) {
+  var html = '';
+  for (var i = 0; i < rows.length; i++) {
+    html += '<tr><td>' + rows[i] + '</td>';
+    for (var j = 1; j <= colCount; j++) {
+      html += '<td class="matrix-cell" data-row="' + i + '" data-col="' + j + '"><div class="circle"></div></td>';
+    }
+    html += '</tr>';
+  }
+  tableEl.innerHTML = html;
+}
+buildMatrix(document.getElementById('blackMatrix'), ['曜石黑','午夜黑','星夜黑','石墨黑','星渚黑','极夜黑','深空黑'], 5);
+buildMatrix(document.getElementById('silverMatrix'), ['流光银','星光银','月华银','羽纱银','晨霜银','霜华银','钛空银'], 5);
+buildMatrix(document.getElementById('purpleMatrix'), ['锻光紫','兰雾紫','霞光紫','暮山紫','凝夜紫','幻梦紫'], 6);
+
+// ========== Option Click Handling ==========
+document.querySelectorAll('.option').forEach(function(opt) {
+  opt.addEventListener('click', function() {
+    var input = this.querySelector('input');
+    var parent = this.parentElement;
+    var type = parent.getAttribute('data-type');
+    if (type === 'single') {
+      parent.querySelectorAll('.option').forEach(function(o) { o.classList.remove('checked'); });
+      input.checked = true;
+      this.classList.add('checked');
+    } else {
+      input.checked = !input.checked;
+      this.classList.toggle('checked');
+    }
+  });
+});
+
+// ========== Matrix Click Handling ==========
+document.querySelectorAll('.matrix-cell').forEach(function(cell) {
+  cell.addEventListener('click', function() {
+    var row = this.getAttribute('data-row');
+    var col = this.getAttribute('data-col');
+    var rowCells = this.parentElement.querySelectorAll('.matrix-cell');
+    rowCells.forEach(function(c) {
+      if (c.getAttribute('data-row') === row) c.classList.remove('selected');
+    });
+    this.classList.add('selected');
+  });
+});
+
+// ========== Scroll to Part1 on load (skip part0 for better UX) ==========
+
+// ========== Form Submit ==========
+var API_BASE = '/api';
+document.getElementById('surveyForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var btn = document.getElementById('submitBtn');
+  
+  // Collect data
+  var data = {};
+  var errors = [];
+  
+  // Single select & multi select
+  document.querySelectorAll('.options').forEach(function(group) {
+    var name = group.getAttribute('data-name');
+    var type = group.getAttribute('data-type');
+    var inputs = group.querySelectorAll('input:checked');
+    if (inputs.length === 0) {
+      var q = group.closest('.question');
+      if (q.querySelector('.required-star')) {
+        errors.push(q.querySelector('.q-label').textContent.replace('*','').trim());
+        q.querySelector('.error-msg').style.display = 'block';
+      }
+    } else if (type === 'single') {
+      data[name] = inputs[0].value;
+    } else {
+      data[name] = Array.from(inputs).map(function(i) { return i.value; });
+    }
+  });
+  
+  // Matrix scores
+  document.querySelectorAll('.matrix-table').forEach(function(table) {
+    var name = table.getAttribute('data-name');
+    var rows = table.getAttribute('data-rows').split(',');
+    var scores = {};
+    var allFilled = true;
+    rows.forEach(function(row, idx) {
+      var selected = table.querySelector('.matrix-cell[data-row="' + idx + '"].selected');
+      if (!selected) { allFilled = false; return; }
+      scores[row] = parseInt(selected.getAttribute('data-col'));
+    });
+    if (!allFilled) {
+      var q = table.closest('.question');
+      errors.push(q.querySelector('.q-label').textContent.replace('*','').trim());
+      q.querySelector('.error-msg').style.display = 'block';
+    } else {
+      data[name] = scores;
+    }
+  });
+  
+  // Text inputs
+  data['suggest_black'] = document.querySelector('textarea[name="suggest_black"]').value.trim();
+  data['suggest_silver'] = document.querySelector('textarea[name="suggest_silver"]').value.trim();
+  data['suggest_purple'] = document.querySelector('textarea[name="suggest_purple"]').value.trim();
+  
+  // Check required matrix + options
+  if (errors.length > 0) {
+    errors[0] && document.getElementById(errors[0]) && document.getElementById(errors[0]).scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  
+  // Additional required field validation
+  var requiredSingles = {
+    'black_favorite': 'Q9',
+    'black_least': 'Q11',
+    'silver_favorite': 'Q14',
+    'silver_least': 'Q16',
+    'purple_favorite': 'Q19',
+    'purple_least': 'Q21',
+    'best_combo': 'Q23'
+  };
+  for (var key in requiredSingles) {
+    if (!data[key]) {
+      errors.push(key);
+    }
+  }
+  var requiredMultis = ['black_reason_like','black_reason_dislike','silver_reason_like','silver_reason_dislike','purple_reason_like','purple_reason_dislike','combo_reason'];
+  requiredMultis.forEach(function(key) {
+    if (!data[key] || data[key].length === 0) errors.push(key);
+  });
+  
+  if (errors.length > 0) { alert('请完成所有必填题目后再提交'); return; }
+  
+  // Add timestamp
+  data._timestamp = new Date().toISOString();
+  
+  // Submit
+  btn.disabled = true;
+  btn.textContent = '提交中...';
+  
+  fetch(API_BASE + '/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(res) {
+    if (res.success) {
+      document.getElementById('successOverlay').classList.add('show');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      alert('提交失败：' + (res.error || '未知错误'));
+      btn.disabled = false;
+      btn.textContent = '提交问卷';
+    }
+  })
+  .catch(function(err) {
+    alert('提交失败，请检查网络后重试');
+    btn.disabled = false;
+    btn.textContent = '提交问卷';
+  });
+});
+
+// Hide error msgs on interaction
+document.addEventListener('click', function(e) {
+  var q = e.target.closest('.question');
+  if (q) {
+    var em = q.querySelector('.error-msg');
+    if (em) em.style.display = 'none';
+  }
+});
+</script>
+</body>
+</html>

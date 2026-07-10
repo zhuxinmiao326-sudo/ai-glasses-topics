@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>问卷数据管理后台</title>
+<style>
+:root {
+  --primary: #4F46E5; --bg: #F8FAFC; --card: #FFFFFF;
+  --text: #1E293B; --text-secondary: #64748B; --border: #E2E8F0;
+  --radius: 12px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif; background: var(--bg); color: var(--text); }
+.container { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+
+.login-box { max-width: 400px; margin: 120px auto; background: var(--card); border-radius: var(--radius); padding: 40px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); text-align: center; }
+.login-box h2 { margin-bottom: 24px; }
+.login-box input { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 15px; margin-bottom: 16px; }
+.login-box input:focus { outline: none; border-color: var(--primary); }
+.login-box button { background: var(--primary); color: white; border: none; padding: 12px 32px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.login-box .error { color: #EF4444; margin-top: 12px; font-size: 14px; display: none; }
+
+.dashboard { display: none; }
+.toolbar { background: var(--card); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.toolbar h2 { font-size: 20px; }
+.toolbar .count { color: var(--text-secondary); font-size: 14px; }
+.toolbar .actions { display: flex; gap: 10px; }
+.btn { padding: 10px 20px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; cursor: pointer; background: white; font-weight: 500; transition: all 0.15s; }
+.btn:hover { border-color: var(--primary); color: var(--primary); }
+.btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+.btn-primary:hover { opacity: 0.9; color: white; }
+
+.records { display: grid; gap: 16px; }
+.record-card { background: var(--card); border-radius: var(--radius); padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.record-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.record-id { font-size: 12px; color: var(--text-secondary); font-family: monospace; }
+.record-time { font-size: 12px; color: var(--text-secondary); }
+.record-body { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; font-size: 13px; }
+.record-item { }
+.record-item .key { font-weight: 600; color: var(--text-secondary); font-size: 11px; text-transform: uppercase; }
+.record-item .val { color: var(--text); word-break: break-all; }
+
+.loading { text-align: center; padding: 60px; color: var(--text-secondary); font-size: 15px; }
+.empty { text-align: center; padding: 80px; color: var(--text-secondary); }
+.empty h3 { font-size: 18px; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="login-box" id="loginBox">
+  <h2>问卷管理后台</h2>
+  <p style="color:var(--text-secondary);margin-bottom:20px;font-size:14px;">请输入管理密钥查看数据</p>
+  <input type="password" id="tokenInput" placeholder="管理密钥" autocomplete="off">
+  <button onclick="doLogin()">进入后台</button>
+  <p class="error" id="loginError">密钥错误，请重试</p>
+</div>
+
+<div class="dashboard" id="dashboard">
+  <div class="toolbar">
+    <div>
+      <h2>问卷数据管理</h2>
+      <p class="count" id="recordCount">加载中...</p>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="refreshData()">刷新</button>
+      <button class="btn btn-primary" onclick="exportCSV()">导出 CSV</button>
+      <button class="btn" onclick="doLogout()">退出</button>
+    </div>
+  </div>
+  <div id="recordsContainer">
+    <div class="loading">加载中...</div>
+  </div>
+</div>
+
+<script>
+var ADMIN_TOKEN = localStorage.getItem('survey_admin_token') || '';
+
+function doLogin() {
+  var token = document.getElementById('tokenInput').value.trim();
+  if (!token) return;
+  ADMIN_TOKEN = token;
+  fetchRecords();
+}
+
+function doLogout() {
+  ADMIN_TOKEN = '';
+  localStorage.removeItem('survey_admin_token');
+  document.getElementById('loginBox').style.display = '';
+  document.getElementById('dashboard').style.display = 'none';
+}
+
+function fetchRecords() {
+  document.getElementById('loginBox').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('recordsContainer').innerHTML = '<div class="loading">加载中...</div>';
+  document.getElementById('loginError').style.display = 'none';
+
+  fetch('/api/records', { headers: { 'X-Admin-Token': ADMIN_TOKEN } })
+    .then(function(r) {
+      if (r.status === 401) throw new Error('Unauthorized');
+      return r.json();
+    })
+    .then(function(data) {
+      if (data.error) { throw new Error(data.error); }
+      localStorage.setItem('survey_admin_token', ADMIN_TOKEN);
+      renderRecords(data.records);
+      document.getElementById('recordCount').textContent = '共 ' + (data.total || data.records.length) + ' 条回复';
+    })
+    .catch(function(err) {
+      if (err.message === 'Unauthorized') {
+        localStorage.removeItem('survey_admin_token');
+        ADMIN_TOKEN = '';
+        document.getElementById('loginBox').style.display = '';
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('loginError').style.display = 'block';
+      } else {
+        document.getElementById('recordsContainer').innerHTML = '<div class="empty"><h3>加载失败</h3><p>' + err.message + '</p></div>';
+      }
+    });
+}
+
+function refreshData() { fetchRecords(); }
+
+function exportCSV() {
+  window.open('/api/export?token=' + encodeURIComponent(ADMIN_TOKEN), '_blank');
+}
+
+function renderRecords(records) {
+  var container = document.getElementById('recordsContainer');
+  if (!records || records.length === 0) {
+    container.innerHTML = '<div class="empty"><h3>暂无数据</h3><p>还没有人提交问卷</p></div>';
+    return;
+  }
+
+  var fieldLabels = {
+    gender: '性别', age: '年龄段', occupation: '职业', earphone_usage: '使用智能耳机',
+    importance_black_scores: '黑色命名看重原因', importance_silver_scores: '银色命名看重原因',
+    importance_purple_scores: '紫色命名看重原因', importance_matters_most: '最看重特质',
+    black_favorite: '最喜欢黑色命名', black_reason_like: '喜欢原因', black_least: '最不喜欢黑色命名', black_reason_dislike: '不喜欢原因',
+    silver_favorite: '最喜欢银色命名', silver_reason_like: '喜欢原因', silver_least: '最不喜欢银色命名', silver_reason_dislike: '不喜欢原因',
+    purple_favorite: '最喜欢紫色命名', purple_reason_like: '喜欢原因', purple_least: '最不喜欢紫色命名', purple_reason_dislike: '不喜欢原因',
+    best_combo: '最佳组合', combo_reason: '组合原因',
+    suggest_black: '黑色建议', suggest_silver: '银色建议', suggest_purple: '紫色建议'
+  };
+
+  var skipKeys = ['id', '_submitted_at', '_timestamp', '_ip'];
+
+  var html = '<div class="records">';
+  records.reverse().forEach(function(r, i) {
+    html += '<div class="record-card">';
+    html += '<div class="record-header">';
+    html += '<span class="record-id">#' + (records.length - i) + ' · ' + (r.id || '') + '</span>';
+    html += '<span class="record-time">' + (r._submitted_at || r._timestamp || '') + '</span>';
+    html += '</div>';
+    html += '<div class="record-body">';
+    for (var key in r) {
+      if (skipKeys.indexOf(key) >= 0) continue;
+      if (key.indexOf('_rate_') >= 0) continue; // Skip individual matrix scores in compact view
+      var v = r[key];
+      if (typeof v === 'object') v = JSON.stringify(v);
+      html += '<div class="record-item"><div class="key">' + (fieldLabels[key] || key) + '</div><div class="val">' + (v || '—') + '</div></div>';
+    }
+    html += '</div></div>';
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// Auto-login if token stored
+if (ADMIN_TOKEN) { fetchRecords(); }
+</script>
+</body>
+</html>
