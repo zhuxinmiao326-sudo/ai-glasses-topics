@@ -559,9 +559,11 @@ document.getElementById('surveyForm').addEventListener('submit', function(e) {
 
   if (errors.length > 0) {
     if (firstErrorEl) {
-      setTimeout(function() {
-        firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
+      var targetEl = firstErrorEl;
+      // Scroll the target into view using scrollTop for reliability
+      var rect = targetEl.getBoundingClientRect();
+      var scrollTop = window.pageYOffset + rect.top - 20;
+      window.scrollTo({ top: scrollTop, behavior: 'smooth' });
     }
     return;
   }
