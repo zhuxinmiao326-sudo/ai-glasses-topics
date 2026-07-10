@@ -353,8 +353,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica
       <label class="option"><input type="checkbox" name="purple_reason_dislike" value="不好念，不好记"><span class="checkbox"></span>C. 不好念，不好记</label>
       <label class="option"><input type="checkbox" name="purple_reason_dislike" value="没有辨识度，没特色"><span class="checkbox"></span>D. 没有辨识度，没特色</label>
       <label class="option"><input type="checkbox" name="purple_reason_dislike" value="字面含义与紫色关联弱"><span class="checkbox"></span>E. 字面含义与紫色关联弱</label>
-      <label class="option"><input type="checkbox" name="purple_reason_dislike" value="感觉太女性化/受众太窄"><span class="checkbox"></span>F. 感觉太女性化/受众太窄</label>
-      <label class="option"><input type="checkbox" name="purple_reason_dislike" value="其他"><span class="checkbox"></span>G. 其他</label>
+      <label class="option"><input type="checkbox" name="purple_reason_dislike" value="其他"><span class="checkbox"></span>F. 其他</label>
     </div>
     <div class="error-msg">请至少选择一个原因</div>
   </div>
@@ -434,7 +433,7 @@ function buildMatrix(tableEl, rows, colCount) {
 }
 buildMatrix(document.getElementById('blackMatrix'), ['曜石黑','午夜黑','星夜黑','石墨黑','星渚黑','极夜黑','深空黑'], 5);
 buildMatrix(document.getElementById('silverMatrix'), ['流光银','星光银','月华银','羽纱银','晨霜银','霜华银','钛空银'], 5);
-buildMatrix(document.getElementById('purpleMatrix'), ['锻光紫','兰雾紫','霞光紫','暮山紫','凝夜紫','幻梦紫'], 6);
+buildMatrix(document.getElementById('purpleMatrix'), ['锻光紫','兰雾紫','霞光紫','暮山紫','凝夜紫','幻梦紫'], 5);
 
 // ========== Option Click Handling ==========
 document.querySelectorAll('.option').forEach(function(opt) {
