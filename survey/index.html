@@ -480,7 +480,8 @@ document.getElementById('surveyForm').addEventListener('submit', function(e) {
   // Collect data
   var data = {};
   var errors = [];
-  
+  var firstErrorEl = null;
+
   // Single select & multi select
   document.querySelectorAll('.options').forEach(function(group) {
     var name = group.getAttribute('data-name');
@@ -491,6 +492,7 @@ document.getElementById('surveyForm').addEventListener('submit', function(e) {
       if (q.querySelector('.required-star')) {
         errors.push(q.querySelector('.q-label').textContent.replace('*','').trim());
         q.querySelector('.error-msg').style.display = 'block';
+        if (!firstErrorEl) firstErrorEl = q;
       }
     } else if (type === 'single') {
       data[name] = inputs[0].value;
@@ -514,6 +516,7 @@ document.getElementById('surveyForm').addEventListener('submit', function(e) {
       var q = table.closest('.question');
       errors.push(q.querySelector('.q-label').textContent.replace('*','').trim());
       q.querySelector('.error-msg').style.display = 'block';
+      if (!firstErrorEl) firstErrorEl = q;
     } else {
       data[name] = scores;
     }
@@ -523,12 +526,6 @@ document.getElementById('surveyForm').addEventListener('submit', function(e) {
   data['suggest_black'] = document.querySelector('textarea[name="suggest_black"]').value.trim();
   data['suggest_silver'] = document.querySelector('textarea[name="suggest_silver"]').value.trim();
   data['suggest_purple'] = document.querySelector('textarea[name="suggest_purple"]').value.trim();
-  
-  // Check required matrix + options
-  if (errors.length > 0) {
-    errors[0] && document.getElementById(errors[0]) && document.getElementById(errors[0]).scrollIntoView({behavior:'smooth',block:'center'});
-    return;
-  }
   
   // Additional required field validation
   var requiredSingles = {
@@ -543,14 +540,29 @@ document.getElementById('surveyForm').addEventListener('submit', function(e) {
   for (var key in requiredSingles) {
     if (!data[key]) {
       errors.push(key);
+      if (!firstErrorEl) {
+        var el = document.querySelector('[data-name="' + key + '"]');
+        if (el) firstErrorEl = el.closest('.question');
+      }
     }
   }
   var requiredMultis = ['black_reason_like','black_reason_dislike','silver_reason_like','silver_reason_dislike','purple_reason_like','purple_reason_dislike','combo_reason'];
   requiredMultis.forEach(function(key) {
-    if (!data[key] || data[key].length === 0) errors.push(key);
+    if (!data[key] || data[key].length === 0) {
+      errors.push(key);
+      if (!firstErrorEl) {
+        var el = document.querySelector('[data-name="' + key + '"]');
+        if (el) firstErrorEl = el.closest('.question');
+      }
+    }
   });
-  
-  if (errors.length > 0) { alert('请完成所有必填题目后再提交'); return; }
+
+  if (errors.length > 0) {
+    if (firstErrorEl) {
+      firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return;
+  }
   
   // Add timestamp
   data._timestamp = new Date().toISOString();
