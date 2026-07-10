@@ -448,11 +448,10 @@ document.querySelectorAll('.option').forEach(function(opt) {
       input.checked = true;
       this.classList.add('checked');
     } else {
-      // Let the browser's native label toggle the checkbox first, then sync visual state
-      setTimeout(function(self, inp) {
-        if (inp.checked) { self.classList.add('checked'); }
-        else { self.classList.remove('checked'); }
-      }, 0, this, input);
+      e.preventDefault();
+      input.checked = !input.checked;
+      if (input.checked) { this.classList.add('checked'); }
+      else { this.classList.remove('checked'); }
     }
   });
 });
