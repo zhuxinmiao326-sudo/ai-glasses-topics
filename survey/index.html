@@ -438,17 +438,21 @@ buildMatrix(document.getElementById('purpleMatrix'), ['锻光紫','兰雾紫','�
 
 // ========== Option Click Handling ==========
 document.querySelectorAll('.option').forEach(function(opt) {
-  opt.addEventListener('click', function() {
+  opt.addEventListener('click', function(e) {
     var input = this.querySelector('input');
     var parent = this.parentElement;
     var type = parent.getAttribute('data-type');
     if (type === 'single') {
+      e.preventDefault();
       parent.querySelectorAll('.option').forEach(function(o) { o.classList.remove('checked'); });
       input.checked = true;
       this.classList.add('checked');
     } else {
-      input.checked = !input.checked;
-      this.classList.toggle('checked');
+      // Let the browser's native label toggle the checkbox first, then sync visual state
+      setTimeout(function(self, inp) {
+        if (inp.checked) { self.classList.add('checked'); }
+        else { self.classList.remove('checked'); }
+      }, 0, this, input);
     }
   });
 });
