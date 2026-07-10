@@ -177,6 +177,8 @@
   .answer-reveal.wrong { color: var(--danger); }
   .answer-reveal.correct { color: var(--success); margin-top: 4px; }
   .review-options { margin: 12px 0 8px 24px; font-size: 14px; color: var(--text-secondary); line-height: 1.8; }
+  .color-swatch { display: inline-block; width: 14px; height: 14px; border-radius: 50%; vertical-align: middle; margin-right: 4px; border: 1px solid rgba(0,0,0,0.15); }
+  .color-swatch-group { display: inline-flex; gap: 3px; margin-right: 4px; vertical-align: middle; }
   .error-box {
     display: none;
     position: fixed;
@@ -2066,6 +2068,62 @@ const BANK_G1 = [
         "text": "传感器位移防抖"
       }
     ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "千问AI眼镜G1威灵顿框"多彩款"中，骑行镜可选的镜片颜色是？",
+    "answer": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "渐变色",
+        "color": "linear-gradient(135deg, #8B6914, #D4A537)"
+      },
+      {
+        "label": "B",
+        "text": "偏光蓝",
+        "color": "#4A90D9"
+      },
+      {
+        "label": "C",
+        "text": "镜面银、染色棕、染色灰",
+        "colors": ["#C0C0C0", "#8B6914", "#808080"]
+      },
+      {
+        "label": "D",
+        "text": "偏光棕、偏光深灰",
+        "colors": ["#8B4513", "#333333"]
+      }
+    ]
+  },
+  {
+    "product": "G1",
+    "type": "sc",
+    "stem": "以下关于千问AI眼镜G1威灵顿框多彩款镜片类型与颜色的对应关系，正确的是？",
+    "answer": "C",
+    "options": [
+      {
+        "label": "A",
+        "text": "高尔夫镜 — 偏光蓝",
+        "color": "#4A90D9"
+      },
+      {
+        "label": "B",
+        "text": "帆船镜 — 渐变色",
+        "color": "linear-gradient(135deg, #8B6914, #D4A537)"
+      },
+      {
+        "label": "C",
+        "text": "骑行镜 — 镜面银、染色棕、染色灰",
+        "colors": ["#C0C0C0", "#8B6914", "#808080"]
+      },
+      {
+        "label": "D",
+        "text": "海钓镜 — 镜面银、染色棕",
+        "colors": ["#C0C0C0", "#8B4513"]
+      }
+    ]
   }
 ];
 const BANK_S1 = [
@@ -3815,7 +3873,7 @@ function renderPaper() {
     } else {
       q.options.forEach(opt => {
         const inputType = q.section === 'sc' ? 'radio' : 'checkbox';
-        html += buildOption(idx, q.section, opt.label, opt.text, opt.label, inputType);
+        html += buildOption(idx, q.section, opt.label, opt.text, opt.label, inputType, opt);
       });
     }
 
@@ -3825,12 +3883,20 @@ function renderPaper() {
   paper.innerHTML = html;
 }
 
-function buildOption(qIdx, section, value, text, answerValue, inputType='radio') {
+function buildOption(qIdx, section, value, text, answerValue, inputType='radio', opt=null) {
   const name = `q-${qIdx}`;
   const id = `q-${qIdx}-${value}`;
+  let colorHtml = '';
+  if (opt) {
+    if (opt.colors && Array.isArray(opt.colors) && opt.colors.length > 0) {
+      colorHtml = '<span class="color-swatch-group">' + opt.colors.map(c => `<span class="color-swatch" style="background:${c}"></span>`).join('') + '</span>';
+    } else if (opt.color) {
+      colorHtml = `<span class="color-swatch" style="background:${opt.color}"></span>`;
+    }
+  }
   return `<label class="option" for="${id}">
     <input type="${inputType}" id="${id}" name="${name}" value="${answerValue}">
-    <span>${escapeHtml(value + '. ' + text)}</span>
+    <span>${colorHtml}${escapeHtml(value + '. ' + text)}</span>
   </label>`;
 }
 
@@ -3987,7 +4053,13 @@ function submitExam(auto=false) {
       if (q.section !== 'tf') {
         reviewHtml += `<div class="review-options">`;
         q.options.forEach(opt => {
-          reviewHtml += `<div>${opt.label}. ${escapeHtml(opt.text)}</div>`;
+          let colorHtml = '';
+          if (opt.colors && Array.isArray(opt.colors) && opt.colors.length > 0) {
+            colorHtml = '<span class="color-swatch-group">' + opt.colors.map(c => `<span class="color-swatch" style="background:${c}"></span>`).join('') + '</span>';
+          } else if (opt.color) {
+            colorHtml = `<span class="color-swatch" style="background:${opt.color}"></span>`;
+          }
+          reviewHtml += `<div>${colorHtml}${opt.label}. ${escapeHtml(opt.text)}</div>`;
         });
         reviewHtml += `</div>`;
       }
