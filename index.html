@@ -43,6 +43,11 @@ header p { color: #666; font-size: 14px; }
 .topic-card .card-link { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; }
 .topic-card .link-hint { position: absolute; top: 12px; right: 12px; font-size: 12px; color: #bbb; transition: color .2s; }
 .topic-card:hover .link-hint { color: #7c3aed; }
+.priority-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-left: 8px; color: #fff; font-weight: 600; }
+.priority-P0 { background: #e53e3e; }
+.priority-P1 { background: #dd6b20; }
+.priority-P2 { background: #38a169; }
+.priority-P3 { background: #718096; }
 .risk-section { background: #fff; border-radius: 14px; padding: 24px; margin-top: 32px; border: 1px solid #ffe0e0; }
 .risk-section h3 { font-size: 16px; color: #e53e3e; margin-bottom: 14px; font-weight: 600; }
 .risk-item { margin-bottom: 12px; font-size: 13px; line-height: 1.6; }
@@ -4915,6 +4920,7 @@ function renderPlatform(key, platform, data) {
           <div>
             <span class="hotspot-tag">${topic.hotspot}</span>
             <span class="heat">${topic.heat}</span>
+            <span class="priority-badge priority-${topic.priority || 'P3'}">${topic.priority || 'P3'}</span>
           </div>
           <div class="idea">${topic.idea}</div>
           <div class="desc">${topic.desc}</div>
