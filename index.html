@@ -37,7 +37,12 @@ header p { color: #666; font-size: 14px; }
 .topic-card:hover { box-shadow: 0 8px 24px rgba(124,58,237,0.12); transform: translateY(-2px); }
 .topic-card .hotspot-tag { display: inline-block; background: #f0e6ff; color: #7c3aed; font-size: 12px; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; font-weight: 500; }
 .topic-card .heat { font-size: 11px; color: #999; margin-left: 6px; }
-.topic-card .idea { font-size: 15px; font-weight: 600; color: #1a1a2e; margin-bottom: 8px; line-height: 1.4; }
+.topic-card .idea { margin-bottom: 8px; line-height: 1.5; }
+.topic-card .idea-angle { font-size: 14px; font-weight: 600; color: #7c3aed; margin-bottom: 4px; }
+.topic-card .idea-hook { font-size: 14px; font-weight: 600; color: #dd6b20; }
+.topic-card .idea-label { display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 4px; margin-right: 4px; color: #fff; font-weight: 600; }
+.topic-card .idea-angle .idea-label { background: #7c3aed; }
+.topic-card .idea-hook .idea-label { background: #dd6b20; }
 .topic-card .desc { font-size: 13px; color: #666; line-height: 1.6; margin-bottom: 10px; }
 .topic-card .formula { font-size: 12px; color: #7c3aed; background: #f8f5ff; padding: 6px 10px; border-radius: 8px; line-height: 1.5; }
 .topic-card .card-link { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1; }
@@ -4890,6 +4895,16 @@ function renderStars(count) {
   return '\u2B50'.repeat(count);
 }
 
+function parseIdea(idea) {
+  if (!idea) return { angle: '', hook: '' };
+  const angleMatch = idea.match(/选题角度[：:](.*?)(?=内容钩子[：:]|$)/s);
+  const hookMatch = idea.match(/内容钩子[：:](.*?)$/s);
+  const angle = angleMatch ? angleMatch[1].trim() : '';
+  const hook = hookMatch ? hookMatch[1].trim() : '';
+  if (!angle && !hook) return { angle: idea, hook: '' };
+  return { angle, hook };
+}
+
 function renderTop3(top3) {
   return `
     <div class="top3-section">
@@ -4913,7 +4928,9 @@ function renderPlatform(key, platform, data) {
   const categories = data.categories.map(cat => `
     <div class="category-title">${cat.title}</div>
     <div class="topics-grid">
-      ${cat.topics.map(topic => `
+      ${cat.topics.map(topic => {
+        const { angle, hook } = parseIdea(topic.idea);
+        return `
         <div class="topic-card">
           <a class="card-link" href="${topic.link || getPlatformSearchURL(key, topic.title)}" target="_blank" rel="noopener"></a>
           <span class="link-hint">\u2197</span>
@@ -4922,11 +4939,15 @@ function renderPlatform(key, platform, data) {
             <span class="heat">${topic.heat}</span>
             <span class="priority-badge priority-${topic.priority || 'P3'}">${topic.priority || 'P3'}</span>
           </div>
-          <div class="idea">${topic.idea}</div>
+          <div class="idea">
+            ${angle ? `<div class="idea-angle"><span class="idea-label">选题角度</span>${angle}</div>` : ''}
+            ${hook ? `<div class="idea-hook"><span class="idea-label">内容钩子</span>${hook}</div>` : ''}
+          </div>
           <div class="desc">${topic.desc}</div>
           <div class="formula">\uD83D\uDCD0 ${topic.formula}</div>
         </div>
-      `).join('')}
+      `;
+      }).join('')}
     </div>
   `).join('');
   return `<div class="platform-panel" id="panel-${key}">${categories}</div>`;
