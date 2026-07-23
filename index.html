@@ -68,6 +68,12 @@ header p { color: #666; font-size: 14px; }
 .topic-card .link-hint { position: absolute; top: 12px; right: 12px; font-size: 12px; color: #bbb; transition: color .2s; }
 .topic-card:hover .link-hint { color: #7c3aed; }
 .priority-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-left: 8px; color: #fff; font-weight: 600; }
+.type-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-left: 8px; color: #fff; font-weight: 600; }
+.type-A { background: #2563eb; }
+.type-B { background: #059669; }
+.topic-meta { font-size: 12px; color: #555; margin-bottom: 8px; line-height: 1.5; }
+.topic-meta .meta-item { display: inline-flex; align-items: flex-start; margin-right: 12px; }
+.topic-meta .meta-label { color: #888; margin-right: 4px; white-space: nowrap; }
 .priority-P0 { background: #e53e3e; }
 .priority-P1 { background: #dd6b20; }
 .priority-P2 { background: #38a169; }
@@ -5216,15 +5222,21 @@ function renderTop3(top3) {
     <div class="top3-section">
       <h2>\uD83D\uDD25 本期最该立刻拍的三连</h2>
       <div class="top3-list">
-        ${top3.map((item, i) => `
+        ${top3.map((item, i) => {
+          const type = item.type === 'B' ? 'B' : 'A';
+          const typeLabel = type === 'B' ? 'B轨·社会情绪' : 'A轨·热点借势';
+          const audienceLine = item.target_audience ? ` · 人群：${item.target_audience}` : '';
+          const sceneLine = item.scene ? ` · 场景：${item.scene}` : '';
+          return `
           <div class="top3-item">
             <div class="rank">TOP ${i + 1}</div>
-            <div class="title">${item.title}</div>
-            <div class="meta">蹭：${item.hotspot} · 难度：${item.difficulty}</div>
+            <div class="title">${item.title}<span class="type-badge type-${type}">${typeLabel}</span></div>
+            <div class="meta">蹭：${item.hotspot} · 难度：${item.difficulty}${audienceLine}${sceneLine}</div>
             <div class="stars">爆款指数：${renderStars(item.stars)}</div>
             ${item.warning ? `<div class="warning">\u26A0\uFE0F ${item.warning}</div>` : ''}
           </div>
-        `).join('')}
+          `;
+        }).join('')}
       </div>
     </div>
   `;
@@ -5233,6 +5245,14 @@ function renderTop3(top3) {
 function renderTopicCard(topic, platformKey) {
   const { angle, hook } = parseIdea(topic.idea);
   const link = topic.link || getPlatformSearchURL(platformKey, topic.title || topic.hotspot);
+  const type = topic.type === 'B' ? 'B' : 'A';
+  const typeLabel = type === 'B' ? 'B轨·社会情绪' : 'A轨·热点借势';
+  const metaHtml = (topic.target_audience || topic.scene) ? `
+    <div class="topic-meta">
+      ${topic.target_audience ? `<span class="meta-item"><span class="meta-label">人群：</span>${topic.target_audience}</span>` : ''}
+      ${topic.scene ? `<span class="meta-item"><span class="meta-label">场景：</span>${topic.scene}</span>` : ''}
+    </div>
+  ` : '';
   return `
     <div class="topic-card">
       <a class="card-link" href="${link}" target="_blank" rel="noopener"></a>
@@ -5241,7 +5261,9 @@ function renderTopicCard(topic, platformKey) {
         <span class="hotspot-tag">${topic.hotspot}</span>
         <span class="heat">${topic.heat}</span>
         <span class="priority-badge priority-${topic.priority || 'P3'}">${topic.priority || 'P3'}</span>
+        <span class="type-badge type-${type}">${typeLabel}</span>
       </div>
+      ${metaHtml}
       <div class="idea">
         ${angle ? `<div class="idea-angle"><span class="idea-label">选题角度</span>${angle}</div>` : ''}
         ${hook ? `<div class="idea-hook"><span class="idea-label">内容钩子</span>${hook}</div>` : ''}
