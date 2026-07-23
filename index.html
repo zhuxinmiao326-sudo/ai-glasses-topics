@@ -5230,9 +5230,31 @@ function renderTop3(top3) {
   `;
 }
 
-function renderPlatform(key, platform, data, track) {
+function renderTopicCard(topic, platformKey) {
+  const { angle, hook } = parseIdea(topic.idea);
+  const link = topic.link || getPlatformSearchURL(platformKey, topic.title || topic.hotspot);
+  return `
+    <div class="topic-card">
+      <a class="card-link" href="${link}" target="_blank" rel="noopener"></a>
+      <span class="link-hint">↗</span>
+      <div>
+        <span class="hotspot-tag">${topic.hotspot}</span>
+        <span class="heat">${topic.heat}</span>
+        <span class="priority-badge priority-${topic.priority || 'P3'}">${topic.priority || 'P3'}</span>
+      </div>
+      <div class="idea">
+        ${angle ? `<div class="idea-angle"><span class="idea-label">选题角度</span>${angle}</div>` : ''}
+        ${hook ? `<div class="idea-hook"><span class="idea-label">内容钩子</span>${hook}</div>` : ''}
+      </div>
+      <div class="desc">${topic.desc}</div>
+      <div class="formula">📐 ${topic.formula}</div>
+    </div>
+  `;
+}
+
+function renderPlatform(key, platform, track) {
   // 按 A/B 轨过滤话题；旧数据无 type 字段时默认归为 A 轨
-  const filteredCategories = data.categories.map(cat => {
+  const filteredCategories = platform.categories.map(cat => {
     const filteredTopics = cat.topics.filter(topic => (topic.type || 'A') === track);
     if (filteredTopics.length === 0) return null;
     return { ...cat, topics: filteredTopics };
@@ -5243,35 +5265,49 @@ function renderPlatform(key, platform, data, track) {
   const categories = filteredCategories.map(cat => `
     <div class="category-title">${cat.title}</div>
     <div class="topics-grid">
-      ${cat.topics.map(topic => {
-        const { angle, hook } = parseIdea(topic.idea);
-        return `
-        <div class="topic-card">
-          <a class="card-link" href="${topic.link || getPlatformSearchURL(key, topic.title)}" target="_blank" rel="noopener"></a>
-          <span class="link-hint">\u2197</span>
-          <div>
-            <span class="hotspot-tag">${topic.hotspot}</span>
-            <span class="heat">${topic.heat}</span>
-            <span class="priority-badge priority-${topic.priority || 'P3'}">${topic.priority || 'P3'}</span>
-          </div>
-          <div class="idea">
-            ${angle ? `<div class="idea-angle"><span class="idea-label">选题角度</span>${angle}</div>` : ''}
-            ${hook ? `<div class="idea-hook"><span class="idea-label">内容钩子</span>${hook}</div>` : ''}
-          </div>
-          <div class="desc">${topic.desc}</div>
-          <div class="formula">\uD83D\uDCD0 ${topic.formula}</div>
-        </div>
-      `;
-      }).join('')}
+      ${cat.topics.map(topic => renderTopicCard(topic, key)).join('')}
     </div>
   `).join('');
   return `<div class="platform-panel" id="panel-${track}-${key}">${categories}</div>`;
 }
 
+function slugifyDirection(title) {
+  return title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+function aggregateDirections(platforms, track) {
+  const directions = {};
+  Object.keys(platforms).forEach(platformKey => {
+    const platform = platforms[platformKey];
+    platform.categories.forEach(cat => {
+      cat.topics.forEach(topic => {
+        if ((topic.type || 'A') !== track) return;
+        if (!directions[cat.title]) {
+          directions[cat.title] = { title: cat.title, topics: [] };
+        }
+        directions[cat.title].topics.push({ ...topic, _platformKey: platformKey });
+      });
+    });
+  });
+  return directions;
+}
+
+function renderDirectionPanel(title, topics, track) {
+  const key = slugifyDirection(title);
+  return `
+    <div class="platform-panel" id="panel-${track}-${key}">
+      <div class="category-title">${title}</div>
+      <div class="topics-grid">
+        ${topics.map(topic => renderTopicCard(topic, topic._platformKey || 'cross')).join('')}
+      </div>
+    </div>
+  `;
+}
+
 function renderRisks(risks) {
   return `
     <div class="risk-section">
-      <h3>\uD83D\uDEA8 风险红线提醒</h3>
+      <h3>🚨 风险红线提醒</h3>
       ${risks.map(r => `
         <div class="risk-item"><strong>${r.title}：</strong>${r.desc}</div>
       `).join('')}
@@ -5299,7 +5335,7 @@ function renderHotlist(platforms, weekDate) {
   if (!platformSections.trim()) return '';
   return `
     <div class="hotlist-section">
-      <h3>\uD83D\uDCCA 本周各平台热榜数据来源</h3>
+      <h3>📊 本周各平台热榜数据来源</h3>
       ${platformSections}
     </div>
   `;
@@ -5327,11 +5363,43 @@ function renderData(data) {
   ];
 
   const trackViews = tracks.map((track, trackIndex) => {
-    const platformMap = countTopicsByTrack(data.platforms, track.key);
-    const platformKeys = Object.keys(platformMap);
-    const totalCount = platformKeys.reduce((sum, k) => sum + platformMap[k].count, 0);
+    if (track.key === 'A') {
+      const platformMap = countTopicsByTrack(data.platforms, track.key);
+      const platformKeys = Object.keys(platformMap);
+      const totalCount = platformKeys.reduce((sum, k) => sum + platformMap[k].count, 0);
 
-    if (platformKeys.length === 0) {
+      if (platformKeys.length === 0) {
+        return `
+          <div class="track-view ${trackIndex === 0 ? 'active' : ''}" id="track-view-${track.key}">
+            <div class="track-empty">本周暂无「${track.label}」相关选题</div>
+          </div>
+        `;
+      }
+
+      const platformTabs = platformKeys.map((key, i) => {
+        const { platform, count } = platformMap[key];
+        return `<button class="platform-tab ${i === 0 ? 'active' : ''}" data-track="${track.key}" data-platform="${key}">${platform.name}（${count}条）</button>`;
+      }).join('');
+
+      const panels = platformKeys.map((key, i) => {
+        const html = renderPlatform(key, platformMap[key].platform, track.key);
+        return html.replace('class="platform-panel"', `class="platform-panel ${i === 0 ? 'active' : ''}"`);
+      }).join('');
+
+      return `
+        <div class="track-view ${trackIndex === 0 ? 'active' : ''}" id="track-view-${track.key}">
+          <div class="platform-tabs active">${platformTabs}</div>
+          ${panels}
+        </div>
+      `;
+    }
+
+    // B 轨：不按平台分，按选题方向（category title）聚合
+    const directions = aggregateDirections(data.platforms, track.key);
+    const directionKeys = Object.keys(directions);
+    const totalCount = directionKeys.reduce((sum, k) => sum + directions[k].topics.length, 0);
+
+    if (directionKeys.length === 0) {
       return `
         <div class="track-view ${trackIndex === 0 ? 'active' : ''}" id="track-view-${track.key}">
           <div class="track-empty">本周暂无「${track.label}」相关选题</div>
@@ -5339,27 +5407,33 @@ function renderData(data) {
       `;
     }
 
-    const platformTabs = platformKeys.map((key, i) => {
-      const { platform, count } = platformMap[key];
-      return `<button class="platform-tab ${i === 0 ? 'active' : ''}" data-track="${track.key}" data-platform="${key}">${platform.name}（${count}条）</button>`;
+    const directionTabs = directionKeys.map((key, i) => {
+      const dir = directions[key];
+      return `<button class="platform-tab ${i === 0 ? 'active' : ''}" data-track="${track.key}" data-platform="${slugifyDirection(key)}">${dir.title}（${dir.topics.length}条）</button>`;
     }).join('');
 
-    const panels = platformKeys.map((key, i) => {
-      const html = renderPlatform(key, platformMap[key].platform, platformMap[key].platform, track.key);
+    const panels = directionKeys.map((key, i) => {
+      const html = renderDirectionPanel(directions[key].title, directions[key].topics, track.key);
       return html.replace('class="platform-panel"', `class="platform-panel ${i === 0 ? 'active' : ''}"`);
     }).join('');
 
     return `
       <div class="track-view ${trackIndex === 0 ? 'active' : ''}" id="track-view-${track.key}">
-        <div class="platform-tabs active">${platformTabs}</div>
+        <div class="platform-tabs active">${directionTabs}</div>
         ${panels}
       </div>
     `;
   }).join('');
 
   const trackTabs = tracks.map((track, i) => {
-    const platformMap = countTopicsByTrack(data.platforms, track.key);
-    const totalCount = Object.keys(platformMap).reduce((sum, k) => sum + platformMap[k].count, 0);
+    let totalCount;
+    if (track.key === 'A') {
+      const platformMap = countTopicsByTrack(data.platforms, track.key);
+      totalCount = Object.keys(platformMap).reduce((sum, k) => sum + platformMap[k].count, 0);
+    } else {
+      const directions = aggregateDirections(data.platforms, track.key);
+      totalCount = Object.keys(directions).reduce((sum, k) => sum + directions[k].topics.length, 0);
+    }
     return `<button class="track-tab ${i === 0 ? 'active' : ''}" data-track="${track.key}">${track.label}<span class="count">${totalCount}条</span></button>`;
   }).join('');
 
@@ -5388,7 +5462,7 @@ function renderData(data) {
     });
   });
 
-  // 二级平台切换
+  // 二级平台/方向切换
   contentEl.querySelectorAll('.platform-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       const track = btn.dataset.track;
@@ -5401,7 +5475,6 @@ function renderData(data) {
     });
   });
 }
-
 function loadWeek(key) {
   const contentEl = document.getElementById('content');
   const data = EMBEDDED_DATA[key];
