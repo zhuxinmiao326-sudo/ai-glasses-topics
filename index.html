@@ -7484,12 +7484,17 @@ function aggregateDirections(platforms, track) {
       cat.topics.forEach(topic => {
         if ((topic.type || 'A') !== track) return;
         if (!directions[cat.title]) {
-          directions[cat.title] = { title: cat.title, topics: [] };
+          directions[cat.title] = { title: cat.title, topics: [], _seen: new Set() };
         }
+        const seen = directions[cat.title]._seen;
+        const key = topic.hotspot || topic.title || JSON.stringify(topic);
+        if (seen.has(key)) return;
+        seen.add(key);
         directions[cat.title].topics.push({ ...topic, _platformKey: platformKey });
       });
     });
   });
+  Object.values(directions).forEach(dir => delete dir._seen);
   return directions;
 }
 
@@ -7564,41 +7569,8 @@ function renderData(data) {
   ];
 
   const trackViews = tracks.map((track, trackIndex) => {
-    if (track.key === 'A') {
-      const platformMap = countTopicsByTrack(data.platforms, track.key);
-      const platformKeys = Object.keys(platformMap);
-      const totalCount = platformKeys.reduce((sum, k) => sum + platformMap[k].count, 0);
-
-      if (platformKeys.length === 0) {
-        return `
-          <div class="track-view ${trackIndex === 0 ? 'active' : ''}" id="track-view-${track.key}">
-            <div class="track-empty">本周暂无「${track.label}」相关选题</div>
-          </div>
-        `;
-      }
-
-      const platformTabs = platformKeys.map((key, i) => {
-        const { platform, count } = platformMap[key];
-        return `<button class="platform-tab ${i === 0 ? 'active' : ''}" data-track="${track.key}" data-platform="${key}">${platform.name}（${count}条）</button>`;
-      }).join('');
-
-      const panels = platformKeys.map((key, i) => {
-        const html = renderPlatform(key, platformMap[key].platform, track.key);
-        return html.replace('class="platform-panel"', `class="platform-panel ${i === 0 ? 'active' : ''}"`);
-      }).join('');
-
-      return `
-        <div class="track-view ${trackIndex === 0 ? 'active' : ''}" id="track-view-${track.key}">
-          <div class="platform-tabs active">${platformTabs}</div>
-          ${panels}
-        </div>
-      `;
-    }
-
-    // B 轨：不按平台分，按选题方向（category title）聚合
     const directions = aggregateDirections(data.platforms, track.key);
     const directionKeys = Object.keys(directions);
-    const totalCount = directionKeys.reduce((sum, k) => sum + directions[k].topics.length, 0);
 
     if (directionKeys.length === 0) {
       return `
@@ -7627,14 +7599,8 @@ function renderData(data) {
   }).join('');
 
   const trackTabs = tracks.map((track, i) => {
-    let totalCount;
-    if (track.key === 'A') {
-      const platformMap = countTopicsByTrack(data.platforms, track.key);
-      totalCount = Object.keys(platformMap).reduce((sum, k) => sum + platformMap[k].count, 0);
-    } else {
-      const directions = aggregateDirections(data.platforms, track.key);
-      totalCount = Object.keys(directions).reduce((sum, k) => sum + directions[k].topics.length, 0);
-    }
+    const directions = aggregateDirections(data.platforms, track.key);
+    const totalCount = Object.keys(directions).reduce((sum, k) => sum + directions[k].topics.length, 0);
     return `<button class="track-tab ${i === 0 ? 'active' : ''}" data-track="${track.key}">${track.label}<span class="count">${totalCount}条</span></button>`;
   }).join('');
 
